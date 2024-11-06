@@ -9,11 +9,11 @@ entity MEMWB_Reg is
     port(
         i_Data_Out  : in    std_logic_vector((N - 1) downto 0);
         i_W_Data    : in    std_logic_vector((N - 1) downto 0);
-        i_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
+        i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CLK       : in    std_logic;
         o_Data_Out  : in    std_logic_vector((N - 1) downto 0);
         o_W_Data    : in    std_logic_vector((N - 1) downto 0);
-        o_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
+        o_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
     );
 end MEMWB_Reg;
 
@@ -27,8 +27,6 @@ architecture structural of MEMWB_Reg is
 	        o_Q	    : out std_logic_vector(N-1 downto 0)
          );
     end component;
-
-    
 
     begin
         DataOut_Reg: reg_N

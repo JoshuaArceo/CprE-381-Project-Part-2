@@ -3,17 +3,17 @@ use IEEE.std_logic_1164.all;
 
 entity MEMWB_Reg is
     generic(
-        Addr_Width : integer  := 5;
+        Addr_Width : integer := 5;
         N : integer := 32
     );
     port(
         i_ALU       : in    std_logic_vector((N - 1) downto 0);
         i_W_Data    : in    std_logic_vector((N - 1) downto 0);
-        i_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
+        i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CLK       : in    std_logic;
         o_ALU       : in    std_logic_vector((N - 1) downto 0);
         o_W_Data    : in    std_logic_vector((N - 1) downto 0);
-        o_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
+        o_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
     );
 end MEMWB_Reg;
 
