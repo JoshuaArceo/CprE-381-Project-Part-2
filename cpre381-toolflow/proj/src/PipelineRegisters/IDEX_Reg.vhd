@@ -2,9 +2,9 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity IFID_Reg is
+entity IDEX_Reg is
     generic(
-        Addr_Width  := 5;
+        Addr_Width : integer := 5;
         N : integer := 32
     );
     port(
@@ -25,9 +25,9 @@ entity IFID_Reg is
         o_ImmExt    : in    std_logic_vector((N - 1) downto 0);
 
     );
-end IFID_Reg;
+end IDEX_Reg;
 
-architecture structural of IFID_Reg is
+architecture structural of IDEX_Reg is
     component reg_N is
         port(
             i_D	    : in std_logic_vector(N-1 downto 0);

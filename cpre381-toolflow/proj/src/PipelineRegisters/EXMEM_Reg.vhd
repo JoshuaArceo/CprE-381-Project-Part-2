@@ -3,15 +3,15 @@ use IEEE.std_logic_1164.all;
 
 entity MEMWB_Reg is
     generic(
-        Addr_Width : integer  := 5;
+        Addr_Width : integer := 5;
         N : integer := 32
     );
     port(
-        i_ALU       : in    std_logic_vector((N - 1) downto 0);
+        i_Data_Out  : in    std_logic_vector((N - 1) downto 0);
         i_W_Data    : in    std_logic_vector((N - 1) downto 0);
         i_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
         i_CLK       : in    std_logic;
-        o_ALU       : in    std_logic_vector((N - 1) downto 0);
+        o_Data_Out  : in    std_logic_vector((N - 1) downto 0);
         o_W_Data    : in    std_logic_vector((N - 1) downto 0);
         o_WB_Addr   : in    std_logic_vecot((Addr_Width - 1) downto 0);
     );
@@ -31,13 +31,13 @@ architecture structural of MEMWB_Reg is
     
 
     begin
-        ALU_Reg: reg_N
+        DataOut_Reg: reg_N
         port map(
-            i_D => i_ALU,
+            i_D => i_Data_Out,
             i_RST => , --TODO
             i_CLK => i_CLK,
             i_WE => '1',
-            o_Q => o_ALU
+            o_Q => o_Data_Out
         );
 
         WBAddr_Reg: reg_N
