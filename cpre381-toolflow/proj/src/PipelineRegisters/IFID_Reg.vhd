@@ -6,11 +6,10 @@ entity IFID_Reg is
         N : integer := 32
     );
     port(
-        i_PC        : in    std_logic_vector((N - 1) downto 0);
+        i_PC4        : in    std_logic_vector((N - 1) downto 0);
         i_Inst      : in    std_logic_vector((N - 1) downto 0);
-        i_IF_Flush  : in    std_logic;
         i_CLK       : in    std_logic;
-        o_PC        : in    std_logic_vector((N - 1) downto 0);
+        o_PC4        : in    std_logic_vector((N - 1) downto 0);
         o_Inst      : in    std_logic_vector((N - 1) downto 0);
     );
 end IFID_Reg;
@@ -31,17 +30,17 @@ architecture structural of IFID_Reg is
     begin
         PC_Reg: reg_N
         port map(
-            i_D => i_PC,
-            i_RST => i_IF_Flush,
+            i_D => i_PC4,
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
-            o_Q => o_PC
+            o_Q => o_PC4
         );
         
         Inst_Reg: reg_N
         port map(
             i_D => i_Inst,
-            i_RST => i_IF_Flush,
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_Inst

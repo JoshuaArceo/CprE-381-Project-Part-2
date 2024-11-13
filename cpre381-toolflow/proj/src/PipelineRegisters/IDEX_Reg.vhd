@@ -45,7 +45,7 @@ architecture structural of IDEX_Reg is
         generic map(N => N)
         port map(
             i_D => i_ReadA,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_ReadA
@@ -55,7 +55,7 @@ architecture structural of IDEX_Reg is
         generic map(N => N)
         port map(
             i_D => i_ReadB,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_ReadB
@@ -65,7 +65,7 @@ architecture structural of IDEX_Reg is
         generic map(N => Addr_Width)
         port map(
             i_D => i_AddrA,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_AddrA
@@ -75,7 +75,7 @@ architecture structural of IDEX_Reg is
         generic map(N => Addr_Width)
         port map(
             i_D => i_AddrB,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_AddrB
@@ -85,7 +85,7 @@ architecture structural of IDEX_Reg is
         generic map(N => 6)
         port map(
             i_D => i_InstFunc,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1'
             o_Q => o_InstFunc
@@ -95,7 +95,7 @@ architecture structural of IDEX_Reg is
         generic map(N => 26)
         port map(
             i_D => i_JumpAddr,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1'
             o_Q => o_JumpAddr
@@ -105,7 +105,7 @@ architecture structural of IDEX_Reg is
         generic map(N => N)
         port map(
             i_D => i_ImmExt,
-            i_RST => , --TODO RESET
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1'
             o_Q => o_ImmExt

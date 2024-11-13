@@ -32,7 +32,7 @@ architecture structural of MEMWB_Reg is
         DataOut_Reg: reg_N
         port map(
             i_D => i_Data_Out,
-            i_RST => , --TODO
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_Data_Out
@@ -42,7 +42,7 @@ architecture structural of MEMWB_Reg is
         generic map(N => Addr_Width)
         port map(
             i_D => i_WB_Addr,
-            i_RST => , --TODO
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_WB_Addr
@@ -51,7 +51,7 @@ architecture structural of MEMWB_Reg is
         WriteData_Reg: reg_N
         port map(
             i_D => i_W_Data,
-            i_RST => , --TODO
+            i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
             o_Q => o_W_Data
