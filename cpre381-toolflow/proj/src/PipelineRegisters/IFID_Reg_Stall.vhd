@@ -8,7 +8,7 @@ entity IFID_Reg_Stall is
     port(
         i_PC        : in    std_logic_vector((N - 1) downto 0);
         i_Inst      : in    std_logic_vector((N - 1) downto 0);
-        i_IF.Flush  : in    std_logic;
+        i_IF_Flush  : in    std_logic;
         i_Stall     : in    std_logic;
         i_CLK       : in    std_logic;
         o_PC        : out    std_logic_vector((N - 1) downto 0);
@@ -33,7 +33,7 @@ architecture structural of IFID_Reg_Stall is
         PC_Reg: reg_N
         port map(
             i_D => i_PC,
-            i_RST => i_IF.Flush,
+            i_RST => i_IF_Flush,
             i_CLK => i_CLK,
             i_WE => not i_Stall,
             o_Q => o_PC
@@ -42,7 +42,7 @@ architecture structural of IFID_Reg_Stall is
         Inst_Reg: reg_N
         port map(
             i_D => i_Inst,
-            i_RST => i_IF.Flush,
+            i_RST => i_IF_Flush,
             i_CLK => i_CLK,
             i_WE => not i_Stall,
             o_Q => o_Inst

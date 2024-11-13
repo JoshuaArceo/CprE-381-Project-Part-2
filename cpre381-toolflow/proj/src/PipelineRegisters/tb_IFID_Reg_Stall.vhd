@@ -14,7 +14,7 @@ architecture behavior of tb_IFID_Reg_Stall is
         port(
             i_PC        : in    std_logic_vector((N - 1) downto 0);
             i_Inst      : in    std_logic_vector((N - 1) downto 0);
-            i_IF.Flush  : in    std_logic;
+            i_IF_Flush  : in    std_logic;
             i_Stall     : in    std_logic;
             i_CLK       : in    std_logic;
             o_PC        : out   std_logic_vector((N - 1) downto 0);
@@ -58,48 +58,48 @@ begin
     end process;
 
     -- Instantiate each stage register
-    IFID: IFID_Reg
+    IFID: IFID_Reg_Stall
         generic map (N => N)
         port map (
             i_PC => PC_in,
             i_Inst => Inst_in,
-            i_IF.Flush => Flush_IFID,
+            i_IF_Flush => Flush_IFID,
             i_Stall => Stall_IFID,
             i_CLK => CLK,
             o_PC => PC_IFID,
             o_Inst => Inst_IFID
         );
 
-    IDEX: IFID_Reg
+    IDEX: IFID_Reg_Stall
         generic map (N => N)
         port map (
             i_PC => PC_IFID,
             i_Inst => Inst_IFID,
-            i_IF.Flush => Flush_IDEX,
+            i_IF_Flush => Flush_IDEX,
             i_Stall => Stall_IDEX,
             i_CLK => CLK,
             o_PC => PC_IDEX,
             o_Inst => Inst_IDEX
         );
 
-    EXMEM: IFID_Reg
+    EXMEM: IFID_Reg_Stall
         generic map (N => N)
         port map (
             i_PC => PC_IDEX,
             i_Inst => Inst_IDEX,
-            i_IF.Flush => Flush_EXMEM,
+            i_IF_Flush => Flush_EXMEM,
             i_Stall => Stall_EXMEM,
             i_CLK => CLK,
             o_PC => PC_EXMEM,
             o_Inst => Inst_EXMEM
         );
 
-    MEMWB: IFID_Reg
+    MEMWB: IFID_Reg_Stall
         generic map (N => N)
         port map (
             i_PC => PC_EXMEM,
             i_Inst => Inst_EXMEM,
-            i_IF.Flush => Flush_MEMWB,
+            i_IF_Flush => Flush_MEMWB,
             i_Stall => Stall_MEMWB,
             i_CLK => CLK,
             o_PC => PC_MEMWB,
