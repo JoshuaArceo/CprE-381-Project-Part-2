@@ -22,26 +22,26 @@ architecture behavior of tb_IFID_Reg_Stall is
         );
     end component;
 
-    -- Pipeline register signals
+    -- PC Signals
     signal PC_IFID    : std_logic_vector(N-1 downto 0);
     signal PC_IDEX    : std_logic_vector(N-1 downto 0);
     signal PC_EXMEM   : std_logic_vector(N-1 downto 0);
     signal PC_MEMWB   : std_logic_vector(N-1 downto 0);
+    -- Inst Signals
     signal Inst_IFID  : std_logic_vector(N-1 downto 0);
     signal Inst_IDEX  : std_logic_vector(N-1 downto 0); 
     signal Inst_EXMEM : std_logic_vector(N-1 downto 0);
     signal Inst_MEMWB : std_logic_vector(N-1 downto 0);
-
-    -- Signals for stalling and flushing
+    -- Stall Signals 
     signal Stall_IFID  : std_logic := '0';
     signal Stall_IDEX  : std_logic := '0';
     signal Stall_EXMEM : std_logic := '0';
     signal Stall_MEMWB : std_logic := '0';
+    -- Flush Signal
     signal Flush_IFID  : std_logic := '0'; 
     signal Flush_IDEX  : std_logic := '0';
     signal Flush_EXMEM : std_logic := '0';
     signal Flush_MEMWB : std_logic := '0';
-
     -- Clock and input signals
     signal CLK     : std_logic := '0';
     signal PC_in   : std_logic_vector(N-1 downto 0);
