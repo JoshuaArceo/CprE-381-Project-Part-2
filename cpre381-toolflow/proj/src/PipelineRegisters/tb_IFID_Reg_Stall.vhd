@@ -7,7 +7,7 @@ end tb_IFID_Reg_Stall;
 architecture behavior of tb_IFID_Reg_Stall is
     constant N : integer := 32;
 
-    component IFID_Reg is
+    component IFID_Reg_Stall is
         generic(
             N : integer := 32
         );

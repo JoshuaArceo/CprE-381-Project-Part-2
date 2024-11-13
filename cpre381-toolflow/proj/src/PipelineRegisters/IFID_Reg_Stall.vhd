@@ -11,8 +11,8 @@ entity IFID_Reg_Stall is
         i_IF.Flush  : in    std_logic;
         i_Stall     : in    std_logic;
         i_CLK       : in    std_logic;
-        o_PC        : in    std_logic_vector((N - 1) downto 0);
-        o_Inst      : in    std_logic_vector((N - 1) downto 0);
+        o_PC        : out    std_logic_vector((N - 1) downto 0);
+        o_Inst      : out    std_logic_vector((N - 1) downto 0)
     );
 end IFID_Reg_Stall;
 
