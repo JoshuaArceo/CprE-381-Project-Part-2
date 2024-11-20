@@ -6,7 +6,7 @@ entity fetch_logic is
     port (
         i_PC4             : in std_logic_vector(N - 1 downto 0); 
         i_JAddr           : in std_logic_vector(25 downto 0);
-        i_BranchAddr      : in std_logic_Vector(N-1 downto 0);
+        i_BranchAddr      : in std_logic_Vector(N - 1 downto 0);
         i_RegA            : in std_logic_vector(N - 1 downto 0);
         i_Branch          : in std_logic; 
         i_ALU_Zero        : in std_logic;
@@ -28,16 +28,6 @@ architecture structural of fetch_logic is
             i_D1 : in std_logic_vector(N - 1 downto 0);
             o_O  : out std_logic_vector(N - 1 downto 0)
             );
-    end component;
-
-    component shifter is
-        port(
-        i_D       : in    std_logic_vector(N-1 downto 0);
-        i_AMT     : in    std_logic_vector(4 downto 0);
-        i_DIR     : in    std_logic; -- 1 left , 0 right
-        i_ARITH   : in    std_logic; -- 0 logical, 1 arithmetic
-        o_Q       : out   std_logic_vector(N-1 downto 0)
-    );
     end component;
 
     
@@ -65,8 +55,8 @@ architecture structural of fetch_logic is
     end component;
 
 
-    signal s_PC4, s_shifted_imm, s_branch_addr, s_jumpAddr, s_branchOut, s_jrOut : std_logic_vector(N-1 downto 0); 
-    signal s_BranchSelect, s_BranchZero, s_BNEZero, s_not_ALU_Zero  : std_logic;
+    signal s_PC4, s_branch_addr, s_jumpAddr, s_branchOut, s_jrOut : std_logic_vector(N-1 downto 0); 
+    signal s_BranchSelect, s_BranchZero, s_BNEZero, s_not_ALU_Zero, s_JumpsOr, s_OutSel  : std_logic;
 
 begin
 
@@ -103,7 +93,7 @@ begin
     jrBranch : mux2t1_N
     port map(
         i_S => i_JR,
-        i_D0 => s_PC4,
+        i_D0 => s_jumpAddr,
         i_D1 => i_RegA,
         o_O => s_jrOut
     );
@@ -116,11 +106,26 @@ begin
         o_O  => s_branchOut
     );
 
+    orJumps: org2
+    port map(
+        i_A => i_Jump,
+        i_B => i_JR,
+        o_F => s_JumpsOr
+    );
+
+    orOut: org2
+    port map(
+        i_A => s_JumpsOr,
+        i_B => s_BranchSelect,
+        o_F => s_OutSel
+    );
+
+
     outMux : mux2t1_N
     port map(
-        i_S => i_Jump,
-        i_D0 => i_BranchAddr,
-        i_D1 => s_jumpAddr,
+        i_S => s_OutSel,
+        i_D0 => s_PC4,
+        i_D1 => s_branchOut,
         o_O => o_Next_PC
     );
 

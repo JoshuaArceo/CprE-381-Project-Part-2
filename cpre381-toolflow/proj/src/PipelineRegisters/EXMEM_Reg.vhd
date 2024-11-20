@@ -74,7 +74,7 @@ architecture structural of EXMEM_Reg is
         );
 
         ctrl_Reg: reg_N
-        generic map(N => 3)
+        generic map(N => 4)
         port map(
             i_D => i_CTRL_Sigs,
             i_RST => '0',

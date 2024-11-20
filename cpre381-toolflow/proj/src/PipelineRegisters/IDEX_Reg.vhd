@@ -149,7 +149,7 @@ architecture structural of IDEX_Reg is
         );
 
         ctrl_Reg: reg_N
-        generic map(N => 8)
+        generic map(N => 9)
         port map(
             i_D => i_CTRL_Sigs,
             i_RST => '0',

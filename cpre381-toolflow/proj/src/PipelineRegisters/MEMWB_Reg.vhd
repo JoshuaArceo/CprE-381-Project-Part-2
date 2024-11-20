@@ -73,7 +73,7 @@ architecture structural of MEMWB_Reg is
         );
 
         ctrl_Reg: reg_N
-        generic map(N => 2)
+        generic map(N => 3)
         port map(
             i_D => i_CTRL_Sigs,
             i_RST => '0',

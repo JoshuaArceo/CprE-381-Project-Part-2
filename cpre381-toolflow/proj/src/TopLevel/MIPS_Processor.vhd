@@ -402,7 +402,7 @@ begin
     pcFetch: fetch_logic
     generic map(N=>N)
     port map(
-        i_PC4             => s_NextInstAddr,
+        i_PC4             => s_IF_PC4,
         i_JAddr           => s_inst_jumpAddr,
         i_BranchAddr      => s_EX_Branch_Addr,
         i_RegA            => s_EX_Reg_A,
