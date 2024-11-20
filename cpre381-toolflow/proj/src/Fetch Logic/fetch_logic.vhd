@@ -4,17 +4,16 @@ use IEEE.std_logic_1164.ALL;
 entity fetch_logic is
     generic (N : INTEGER := 32); 
     port (
-        i_PC              : in std_logic_vector(N - 1 downto 0); 
+        i_PC4             : in std_logic_vector(N - 1 downto 0); 
         i_JAddr           : in std_logic_vector(25 downto 0);
-        i_Imm             : in std_logic_vector(N - 1 downto 0);
+        i_BranchAddr      : in std_logic_Vector(N-1 downto 0);
         i_RegA            : in std_logic_vector(N - 1 downto 0);
         i_Branch          : in std_logic; 
         i_ALU_Zero        : in std_logic;
         i_Jump            : in std_logic;  
         i_JR              : in std_logic;
         i_BNE             : in std_logic;  
-        o_PC4             : out std_logic_vector(N - 1 downto 0);
-        o_PC              : out std_logic_vector(N - 1 downto 0) 
+        o_Next_PC         : out std_logic_vector(N - 1 downto 0) 
         );
 
 end fetch_logic;
@@ -41,15 +40,6 @@ architecture structural of fetch_logic is
     );
     end component;
 
-    component ripple_adder_N is
-        port(
-         i_A	: in std_logic_vector(N-1 downto 0);
-	     i_B	: in std_logic_vector(N-1 downto 0);
-	     i_Cin	: in std_logic;
-	     o_S	: out std_logic_vector(N-1 downto 0);
-		 o_OFCIN: out std_logic;
-	     o_Cout	: out std_logic);
-    end component;
     
     component andg2 is
         port(
@@ -80,33 +70,8 @@ architecture structural of fetch_logic is
 
 begin
 
-    PC_Add4 : ripple_adder_N
-    port map(
-        i_A => i_PC, 
-        i_B => X"00000004",
-        i_Cin => '0',
-        o_S => s_PC4
-    );
-
-    o_PC4 <= s_PC4;
+    s_PC4 <= i_PC4;
     s_jumpAddr <= s_PC4(31 downto 28) & i_JAddr & "00";
-
-    Branch_Shifter : shifter
-    port map(
-        i_D                => i_imm,
-        i_AMT              => "00010",     
-        i_DIR              => '1',    
-        i_ARITH            => '0', 
-        o_Q                => s_shifted_imm
-    );
-
-    Branch_PC_Adder : ripple_adder_N
-    port map(
-        i_A => s_PC4,
-        i_B => s_shifted_imm,
-        i_Cin => '0',
-        o_S => s_branch_addr
-    );
 
     beqAnd : andg2
     port map(
@@ -154,9 +119,9 @@ begin
     outMux : mux2t1_N
     port map(
         i_S => i_Jump,
-        i_D0 => s_branchOut,
+        i_D0 => i_BranchAddr,
         i_D1 => s_jumpAddr,
-        o_O => o_PC
+        o_O => o_Next_PC
     );
 
 

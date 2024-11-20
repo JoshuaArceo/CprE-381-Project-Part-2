@@ -8,27 +8,44 @@ entity IDEX_Reg is
         N : integer := 32
     );
     port(
-        i_ReadA     : in    std_logic_vector((N - 1) downto 0);
-        i_ReadB     : in    std_logic_vector((N - 1) downto 0);
-        i_AddrA     : in    std_logic_vector((Addr_Width - 1) downto 0);
-        i_AddrB     : in    std_logic_vector((Addr_Width - 1) downto 0);
-        i_InstFunc  : in    std_logic_vector(5 downto 0);
-        i_JumpAddr  : in    std_logic_vector(25 downto 0);
-        i_ImmExt    : in    std_logic_vector((N - 1) downto 0);
-        i_CLK       : in    std_logic;
-        o_ReadA     : in    std_logic_vector((N - 1) downto 0);
-        o_ReadB     : in    std_logic_vector((N - 1) downto 0);
-        o_AddrA     : in    std_logic_vector((Addr_Width - 1) downto 0);
-        o_AddrB     : in    std_logic_vector((Addr_Width - 1) downto 0);
-        o_InstFunc  : in    std_logic_vector(5 downto 0);
-        o_JumpAddr  : in    std_logic_vector(25 downto 0);
-        o_ImmExt    : in    std_logic_vector((N - 1) downto 0);
-
+        i_ReadA     : in     std_logic_vector((N - 1) downto 0);
+        i_ReadB     : in     std_logic_vector((N - 1) downto 0);
+        -- i_AddrA     : in     std_logic_vector((Addr_Width - 1) downto 0);
+        -- i_AddrB     : in     std_logic_vector((Addr_Width - 1) downto 0);
+        i_WB_Addr    : in     std_logic_vector((Addr_Width - 1) downto 0);
+        i_InstOpCode  : in     std_logic_vector(5 downto 0);
+        i_InstFunc  : in     std_logic_vector(5 downto 0);
+        i_BranchAddr  : in     std_logic_vector(N -1 downto 0);
+        i_ImmExt    : in     std_logic_vector((N - 1) downto 0);
+        i_CTRL_Sigs : in     std_logic_vector(8 downto 0);  
+        i_CLK       : in     std_logic;
+        o_ReadA     : out    std_logic_vector((N - 1) downto 0);
+        o_ReadB     : out    std_logic_vector((N - 1) downto 0);
+        -- o_AddrA     : out    std_logic_vector((Addr_Width - 1) downto 0);
+        -- o_AddrB     : out    std_logic_vector((Addr_Width - 1) downto 0);
+        o_WB_Addr    : out    std_logic_vector((Addr_Width - 1) downto 0);
+        o_InstOpCode  : out     std_logic_vector(5 downto 0);
+        o_InstFunc  : out    std_logic_vector(5 downto 0);
+        o_BranchAddr  : out     std_logic_vector(N -1 downto 0);
+        o_ImmExt    : out    std_logic_vector((N - 1) downto 0);
+        o_CTRL_Sigs : out     std_logic_vector(8 downto 0)
     );
 end IDEX_Reg;
 
+-- Ctrlsignals:
+-- 0:  Mem2Reg
+-- 1:  Halt
+-- 2:  RegWrite
+-- 3:  MemWrite
+-- 4:  ALUSrc
+-- 5:  Shift
+-- 6:  Branch
+-- 7:  BNE
+-- 8:  JR
+
 architecture structural of IDEX_Reg is
     component reg_N is
+        generic(N : integer);
         port(
             i_D	    : in std_logic_vector(N-1 downto 0);
 	        i_RST	: in std_logic;
@@ -61,24 +78,34 @@ architecture structural of IDEX_Reg is
             o_Q => o_ReadB
         );
 
-        AddrA_Reg: reg_N
-        generic map(N => Addr_Width)
-        port map(
-            i_D => i_AddrA,
-            i_RST => '0',
-            i_CLK => i_CLK,
-            i_WE => '1',
-            o_Q => o_AddrA
-        );
+        -- AddrA_Reg: reg_N
+        -- generic map(N => Addr_Width)
+        -- port map(
+        --     i_D => i_AddrA,
+        --     i_RST => '0',
+        --     i_CLK => i_CLK,
+        --     i_WE => '1',
+        --     o_Q => o_AddrA
+        -- );
 
-        AddrB_Reg: reg_N
+        -- AddrB_Reg: reg_N
+        -- generic map(N => Addr_Width)
+        -- port map(
+        --     i_D => i_AddrB,
+        --     i_RST => '0',
+        --     i_CLK => i_CLK,
+        --     i_WE => '1',
+        --     o_Q => o_AddrB
+        -- );
+
+        AddrWr_Reg: reg_N
         generic map(N => Addr_Width)
         port map(
-            i_D => i_AddrB,
+            i_D => i_WB_Addr,
             i_RST => '0',
             i_CLK => i_CLK,
             i_WE => '1',
-            o_Q => o_AddrB
+            o_Q => o_WB_Addr
         );
 
         InstFunc_Reg: reg_N
@@ -87,19 +114,29 @@ architecture structural of IDEX_Reg is
             i_D => i_InstFunc,
             i_RST => '0',
             i_CLK => i_CLK,
-            i_WE => '1'
+            i_WE => '1',
             o_Q => o_InstFunc
         );
 
-        JumpAddr_Reg: reg_N
-        generic map(N => 26)
+        InstOp_Reg: reg_N
+        generic map(N => 6)
         port map(
-            i_D => i_JumpAddr,
+            i_D => i_InstOpCode,
             i_RST => '0',
             i_CLK => i_CLK,
-            i_WE => '1'
-            o_Q => o_JumpAddr
+            i_WE => '1',
+            o_Q => o_InstOpCode
         );
+
+        -- JumpAddr_Reg: reg_N
+        -- generic map(N => 26)
+        -- port map(
+        --     i_D => i_JumpAddr,
+        --     i_RST => '0',
+        --     i_CLK => i_CLK,
+        --     i_WE => '1',
+        --     o_Q => o_JumpAddr
+        -- );
 
         ImmExt_Reg: reg_N
         generic map(N => N)
@@ -107,8 +144,18 @@ architecture structural of IDEX_Reg is
             i_D => i_ImmExt,
             i_RST => '0',
             i_CLK => i_CLK,
-            i_WE => '1'
+            i_WE => '1',
             o_Q => o_ImmExt
+        );
+
+        ctrl_Reg: reg_N
+        generic map(N => 8)
+        port map(
+            i_D => i_CTRL_Sigs,
+            i_RST => '0',
+            i_CLK => i_CLK,
+            i_WE => '1',
+            o_Q => o_CTRL_Sigs
         );
 
 

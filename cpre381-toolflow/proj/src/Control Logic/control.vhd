@@ -70,7 +70,7 @@ process(i_opcode, i_func)
 	elsif (i_opcode = "000011") then --jal 
 	o_ALUSrc <= '1';
 	o_Jal <= '1';
-	o_RegWr <= '1';
+	o_RegWr <= '0'; --set to 0 since JAL will be calculated and finished in  ID 
 	o_Jump <= '1';
 
 	elsif (i_opcode = "000100") then --beq 
