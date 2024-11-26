@@ -669,13 +669,12 @@ ALU0: alu
 
 --------------------------------MEMORY--------------------------------
 
-      o_ALU_Out   => s_MEM_ALU_Out,
+      o_ALU_Out   => s_DMemAddr,
       o_W_Data    => s_DMemData,
       o_WB_Addr   => s_MEM_WB_Addr,
       o_CTRL_Sigs => s_MEM_CTRL_Sigs 
     );
-  
-    s_DmemAddr <= s_MEM_ALU_Out;
+
     s_DMemWr <= s_MEM_CTRL_Sigs(MEM_WRITE);
     
 
@@ -686,7 +685,7 @@ ALU0: alu
       N => N
     )
     port map(
-      i_ALU => s_MEM_ALU_Out,
+      i_ALU => s_DMemAddr,
       i_Mem_Data => s_DMemOut,
       i_WB_Addr => s_MEM_WB_Addr,
       i_CTRL_Sigs => s_MEM_CTRL_Sigs(2 downto 0),
@@ -705,7 +704,7 @@ ALU0: alu
     wbDataMux: mux2t1_N
     generic map(N => N)
     port map(
-      i_S => s_WB_CTRL_Sigs(MEM_TO_REG),
+      i_S => s_MEM_CTRL_Sigs(MEM_TO_REG),
       i_D0 => s_WB_WBDataZero,
       i_D1 => s_WB_WBDataOne,
       o_O => s_WB_Data

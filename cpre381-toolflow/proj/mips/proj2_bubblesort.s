@@ -21,26 +21,40 @@ outer_loop:
     li $t1, 0                       # Reset j = 0 for inner loop
     addi $s2, $s2, -1               # Decrease size for inner loop
     add $t3, $zero, $s0             # Reset iterator address for j
-
 inner_loop:
     lw $s3, 0($t3)                  # Load arr[j] into $s3
+    nop
+    nop
+    
     addi $t3, $t3, 4                # Increment address iterator for j
-    lw $s4, 0($t3)                  # Load arr[j+1] into $s4
+    nop
+    nop
+    nop
 
+    lw $s4, 0($t3)                  # Load arr[j+1] into $s4
+    nop
+    nop
+    nop
     slt $t4, $s4, $s3               # $t4 = 1 if $s4 < $s3
     beq $t4, $zero, no_swap         # Skip swap if $s4 >= $s3
-
+    nop
+    nop
     # Swap arr[j] and arr[j+1]
     sw $s4, -4($t3)                 # Store $s4 into arr[j]
     sw $s3, 0($t3)                  # Store $s3 into arr[j+1]
 
 no_swap:
     addi $t1, $t1, 1                # j++
+    nop
+    nop
+    nop
     bne $t1, $s2, inner_loop        # Continue if j != n-i
-
+    nop
+    nop
     addi $t0, $t0, 1                # i++
     bne $t0, $s1, outer_loop        # Continue if i != n-1
-
+    nop
+    nop
     # Print sorted array
     li $t0, 0                       # Reset i for print loop
     add $t2, $zero, $s0             # Reset iterator address for print loop
@@ -57,7 +71,8 @@ print_loop:
     addi $t2, $t2, 4                # Increment iterator address
     addi $t0, $t0, 1                # i++
     bne $t0, $s1, print_loop        # Continue if i != n
-
+    nop
+    nop
     # Print newline
     la $a0, newline
     li $v0, 4
