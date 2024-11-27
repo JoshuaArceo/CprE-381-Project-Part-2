@@ -10,8 +10,6 @@ entity IDEX_Reg is
     port(
         i_ReadA     : in     std_logic_vector((N - 1) downto 0);
         i_ReadB     : in     std_logic_vector((N - 1) downto 0);
-        -- i_AddrA     : in     std_logic_vector((Addr_Width - 1) downto 0);
-        -- i_AddrB     : in     std_logic_vector((Addr_Width - 1) downto 0);
         i_WB_Addr    : in     std_logic_vector((Addr_Width - 1) downto 0);
         i_InstOpCode  : in     std_logic_vector(5 downto 0);
         i_InstFunc  : in     std_logic_vector(5 downto 0);
@@ -23,8 +21,6 @@ entity IDEX_Reg is
         i_Stall     : in    std_logic;
         o_ReadA     : out    std_logic_vector((N - 1) downto 0);
         o_ReadB     : out    std_logic_vector((N - 1) downto 0);
-        -- o_AddrA     : out    std_logic_vector((Addr_Width - 1) downto 0);
-        -- o_AddrB     : out    std_logic_vector((Addr_Width - 1) downto 0);
         o_WB_Addr    : out    std_logic_vector((Addr_Width - 1) downto 0);
         o_InstOpCode  : out     std_logic_vector(5 downto 0);
         o_InstFunc  : out    std_logic_vector(5 downto 0);
@@ -79,26 +75,6 @@ architecture structural of IDEX_Reg is
             i_WE => not i_Stall,
             o_Q => o_ReadB
         );
-
-        -- AddrA_Reg: reg_N
-        -- generic map(N => Addr_Width)
-        -- port map(
-        --     i_D => i_AddrA,
-        --     i_RST => i_Flush,
-        --     i_CLK => i_CLK,
-        --     i_WE => not i_Stall,
-        --     o_Q => o_AddrA
-        -- );
-
-        -- AddrB_Reg: reg_N
-        -- generic map(N => Addr_Width)
-        -- port map(
-        --     i_D => i_AddrB,
-        --     i_RST => i_Flush,
-        --     i_CLK => i_CLK,
-        --     i_WE => not i_Stall,
-        --     o_Q => o_AddrB
-        -- );
 
         AddrWr_Reg: reg_N
         generic map(N => Addr_Width)
