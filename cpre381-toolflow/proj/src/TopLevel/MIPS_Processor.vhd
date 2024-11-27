@@ -337,7 +337,7 @@ end component;
   --ALU Signals
   signal  s_ALU_Zero, s_ALU_COUT, s_ALU_Ovfl, s_NotBranch: std_logic;
   signal s_ALUOP : std_logic_vector(3 downto 0);
-  signal s_EX_ALU_Out, s_MEM_ALU_Out : std_logic_vector((DATA_WIDTH - 1) downto 0); 
+  signal s_MEM_ALU_Out : std_logic_vector((DATA_WIDTH - 1) downto 0); 
   signal s_ALU_A_In, s_ALU_B_In, s_ALU_Out   :std_logic_vector((DATA_WIDTH - 1) downto 0);
 
   -- control signals
@@ -617,6 +617,7 @@ ALU0: alu
       o_ZERO => s_ALU_Zero
     );
 
+
     -- For synthesis
     oALUOut <= s_ALU_Out;
 
@@ -669,13 +670,12 @@ ALU0: alu
 
 --------------------------------MEMORY--------------------------------
 
-      o_ALU_Out   => s_MEM_ALU_Out,
+      o_ALU_Out   => s_DMemAddr,
       o_W_Data    => s_DMemData,
       o_WB_Addr   => s_MEM_WB_Addr,
       o_CTRL_Sigs => s_MEM_CTRL_Sigs 
     );
-  
-    s_DmemAddr <= s_MEM_ALU_Out;
+
     s_DMemWr <= s_MEM_CTRL_Sigs(MEM_WRITE);
     
 
@@ -686,7 +686,7 @@ ALU0: alu
       N => N
     )
     port map(
-      i_ALU => s_MEM_ALU_Out,
+      i_ALU => s_DMemAddr,
       i_Mem_Data => s_DMemOut,
       i_WB_Addr => s_MEM_WB_Addr,
       i_CTRL_Sigs => s_MEM_CTRL_Sigs(2 downto 0),

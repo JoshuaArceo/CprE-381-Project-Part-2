@@ -55,10 +55,11 @@ architecture structural of fetch_logic is
     end component;
 
 
-    signal s_PC4, s_branch_addr, s_jumpAddr, s_branchOut, s_jrOut : std_logic_vector(N-1 downto 0); 
+    signal s_PC4, s_branchAddr, s_jumpAddr, s_branchOut, s_jrOut : std_logic_vector(N-1 downto 0); 
     signal s_BranchSelect, s_BranchZero, s_BNEZero, s_not_ALU_Zero, s_JumpsOr, s_OutSel  : std_logic;
 
 begin
+    s_branchAddr <= i_BranchAddr;
 
     s_PC4 <= i_PC4;
     s_jumpAddr <= s_PC4(31 downto 28) & i_JAddr & "00";
@@ -102,7 +103,7 @@ begin
     port map(
         i_S  => s_BranchSelect,
         i_D0 => s_jrOut,
-        i_D1 => s_branch_addr,
+        i_D1 => s_BranchAddr,
         o_O  => s_branchOut
     );
 

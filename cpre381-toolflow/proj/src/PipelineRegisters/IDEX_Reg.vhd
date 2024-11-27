@@ -129,15 +129,15 @@ architecture structural of IDEX_Reg is
             o_Q => o_InstOpCode
         );
 
-        -- JumpAddr_Reg: reg_N
-        -- generic map(N => 26)
-        -- port map(
-        --     i_D => i_JumpAddr,
-        --     i_RST => i_RST,
-        --     i_CLK => i_CLK,
-        --     i_WE => '1',
-        --     o_Q => o_JumpAddr
-        -- );
+        BranchAddr_Reg: reg_N
+        generic map(N => N)
+        port map(
+            i_D => i_BranchAddr,
+            i_RST => i_RST,
+            i_CLK => i_CLK,
+            i_WE => '1',
+            o_Q => o_BranchAddr
+        );
 
         ImmExt_Reg: reg_N
         generic map(N => N)
