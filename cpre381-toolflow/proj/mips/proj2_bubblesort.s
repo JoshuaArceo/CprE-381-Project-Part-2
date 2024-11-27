@@ -25,13 +25,10 @@ outer_loop:
     addi $t3, $t3, 4                #addr itr j += 4
     nop
     nop
-    nop
     lw $s4, 0($t3)                  #arr[j+1]
     addi $t1, $t1, 1                #j++
-    nop
-    nop
+    nop                             
     slt $t4, $s3, $s4               #set $t4 = 1 if $s3 < $s4
-    nop
     nop
     nop
     bne $t4, $zero, cond
@@ -50,12 +47,10 @@ outer_loop:
       bne $t0, $s1, outer_loop           #i != n
       nop
       nop
-      # nop
       li $t0, 0
       addi $s1, $s1, 1
 
 print_loop:
-  nop
   nop
   addi $t0, $t0, 1                  #i++
   addi $t2, $t2, 4                  #addr itr i += 4

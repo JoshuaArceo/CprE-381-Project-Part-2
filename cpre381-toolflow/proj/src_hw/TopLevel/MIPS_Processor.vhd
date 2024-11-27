@@ -528,7 +528,7 @@ muxRegWrite0: mux2t1_N
       i_rW => s_RegWrAddr,
       i_WE => s_RegWr,
       i_D => s_RegWrData,
-      i_CLK => iCLK,
+      i_CLK => not iCLK,
       i_RST => iRST,
       o_ReadA => s_ID_Reg_A,
       o_ReadB => s_ID_Reg_B
