@@ -5,7 +5,6 @@ arr: .word 10, 60, 40, 70, 20, 30, 90, 100, 0, 80, 50
   .globl main
 
 main:
-  lui $s0, 0x1001                   #arr[0]
   addi $t0, $0, 5  
   addi $t1, $0, 0
   nop

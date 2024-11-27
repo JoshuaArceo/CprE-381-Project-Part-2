@@ -20,6 +20,15 @@ end regfile;
 
 architecture structural of regfile is
 
+    component mux2t1_N is
+        generic(N : integer := 32); -- Generic of type integer for input/output data width. Default value is 32.
+        port(i_S          : in std_logic;
+             i_D0         : in std_logic_vector(N-1 downto 0);
+             i_D1         : in std_logic_vector(N-1 downto 0);
+             o_O          : out std_logic_vector(N-1 downto 0));
+      
+      end component;
+
     component decoder_5t32
         port(
         i_In	: in std_logic_vector(4 downto 0);
@@ -29,7 +38,7 @@ architecture structural of regfile is
 
     component reg_N 
         port(
-        i_D	: in std_logic_vector;
+            i_D	: in std_logic_vector;
 	     i_RST	: in std_logic;
 	     i_CLK	: in std_logic;
 	     i_WE	: in std_logic;
@@ -81,6 +90,9 @@ architecture structural of regfile is
     type reg_array is array (0 to 31) of std_logic_vector(31 downto 0);
     signal s_R : reg_array := (others => (others => '0'));
 
+    signal s_ReadA, s_ReadB : std_logic_vector((DATA_WIDTH -1) downto 0);
+
+    signal s_AMux, s_BMux : std_logic;
 
     begin
 
@@ -150,7 +162,7 @@ architecture structural of regfile is
             i_Reg30 => s_R(30),
             i_Reg31 => s_R(31),
             i_Sel   => i_rA,
-            o_Reg   => o_ReadA
+            o_Reg   => S_ReadA
         );
 
     -- OUTPUT READ B
@@ -189,9 +201,44 @@ architecture structural of regfile is
             i_Reg30 => s_R(30),
             i_Reg31 => s_R(31),
             i_Sel   => i_rB,
-            o_Reg   => o_ReadB
+            o_Reg   => S_ReadB
             );
-        
 
-    
+            --Temporary fix to read correct data on same cycle as write
+
+            process(i_rA, i_rB, i_rW, i_WE, i_D, i_CLK)
+            begin
+                if(i_WE) then
+                    if(i_rA = i_rW) then
+                       s_AMux <= '1';
+                    else
+                        s_AMux <= '0';
+                    end if;
+                    if(i_rB = i_rW) then
+                        s_BMux <= '1';
+                    else
+                    s_BMux <= '0';
+                    end if;
+                end if;
+            end process;
+
+           Aout: mux2t1_N
+           generic map(N => DATA_WIDTH)
+           port map(
+            i_S => s_AMux,
+            i_D0 => S_ReadA,
+            i_D1 => i_D,
+            o_O => o_ReadA
+           );
+
+           Bout: mux2t1_N
+           generic map(N => DATA_WIDTH)
+           port map(
+            i_S => s_BMux,
+            i_D0 => S_ReadB,
+            i_D1 => i_D,
+            o_O => o_ReadB
+           );
+            
+
 end structural;

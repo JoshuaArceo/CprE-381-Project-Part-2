@@ -26,7 +26,8 @@ begin
 
 G_NBit_DFFG: for i in 0 to N-1 generate
 	DFFGI:	dffg 
-	port map(i_CLK => i_CLK,
+	port map(
+		i_CLK => i_CLK,
 		i_RST => i_RST,
 		i_WE => i_WE,
 		i_D => i_D(i),
