@@ -23,11 +23,16 @@ main:
     nop
     jal here
     nop
+    nop
     lw $s5, 0($s0)
     lw $s6, 4($s0)
     lw $s7, 8($s0)
     lw $t9, 12($s0)
+    nop
+    nop
+    nop
     j yup
+    nop
     nop
 
 back:
@@ -35,23 +40,28 @@ back:
     nor $t2, $t2, $s3
     xor $t3, $s5, $s4
     xori $t4, $t4, 0xABCDBEEF
-    addi $t3, $t3, 0x0101ABDC
+    addi $t3, $t3, 3243
     subu $t2, $s6, $s5  
     nop    
     sra  $t4, $t3, 2
     bne $t2, $t3, exit
     nop
     nop
-    j yup
+    j back
+    nop
     nop
 
-
-# sra, bne,
 yup:
-    nop
-    nop
     slt $t6, $s5, $s6
+    nop
+    nop
+    nop
+    nop
     sll $s7, $s7, 2
+    nop
+    nop
+    nop
+    nop
     srl $t9, $t9, 2
     nop
     slti $t7, $s7, 90
@@ -81,3 +91,5 @@ here:
     nop
     addi $s0, $s0, 4
     jr $ra
+    nop
+    nop
