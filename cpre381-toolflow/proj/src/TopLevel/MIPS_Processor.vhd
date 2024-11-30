@@ -45,10 +45,10 @@ architecture structure of MIPS_Processor is
   signal s_RegWrAddr    : std_logic_vector(4 downto 0); -- TODO: use this signal as the final destination register address input
   signal s_RegWrData    : std_logic_vector(N-1 downto 0); -- TODO: use this signal as the final data memory data input
 
-  -- Required instruction memory signals
-  signal s_IMemAddr     : std_logic_vector(N-1 downto 0); -- Do not assign this signal, assign to s_NextInstAddr instead
-  signal s_NextInstAddr : std_logic_vector(N-1 downto 0); -- TODO: use this signal as your intended final instruction memory address input.
-  signal s_Inst         : std_logic_vector(N-1 downto 0); -- TODO: use this signal as the instruction signal 
+  -- Required Instruction memory signals
+  signal s_IMemAddr     : std_logic_vector(N-1 downto 0); -- Do not assign this signal, assign to s_NextInstAddr Instead
+  signal s_NextInstAddr : std_logic_vector(N-1 downto 0); -- TODO: use this signal as your intended final Instruction memory address input.
+  signal s_Inst         : std_logic_vector(N-1 downto 0); -- TODO: use this signal as the Instruction signal 
 
   -- Required halt signal -- for simulation
   signal s_Halt         : std_logic;  -- TODO: this signal indicates to the simulation that intended program execution has completed. (Opcode: 01 0100)
@@ -120,8 +120,7 @@ end component;
             i_PC4       : in     std_logic_vector((N - 1) downto 0);
             i_Inst      : in     std_logic_vector((N - 1) downto 0);
             i_CLK       : in     std_logic;
-            i_Flush     : in    std_logic;
-            i_Stall     : in    std_logic;
+            i_RST       : in    std_logic;
             o_PC4       : out    std_logic_vector((N - 1) downto 0);
             o_Inst      : out    std_logic_vector((N - 1) downto 0)
         );
@@ -133,29 +132,24 @@ end component;
           N : integer
       );
       port(
-          i_ReadA     : in     std_logic_vector((N - 1) downto 0);
-          i_ReadB     : in     std_logic_vector((N - 1) downto 0);
-          -- i_AddrA     : in     std_logic_vector((Addr_Width - 1) downto 0);
-          -- i_AddrB     : in     std_logic_vector((Addr_Width - 1) downto 0);
-          i_WB_Addr    : in     std_logic_vector((Addr_Width - 1) downto 0);
-          i_InstOpCode  : in     std_logic_vector(5 downto 0);
-          i_InstFunc  : in     std_logic_vector(5 downto 0);
-          i_BranchAddr  : in     std_logic_vector(N -1 downto 0);
-          i_ImmExt    : in     std_logic_vector((N - 1) downto 0);
-          i_CTRL_Sigs : in     std_logic_vector(8 downto 0);  
-          i_CLK       : in     std_logic;
-          i_Flush     : in    std_logic;
-          i_Stall     : in    std_logic;
-          o_ReadA     : out    std_logic_vector((N - 1) downto 0);
-          o_ReadB     : out    std_logic_vector((N - 1) downto 0);
-          -- o_AddrA     : out    std_logic_vector((Addr_Width - 1) downto 0);
-          -- o_AddrB     : out    std_logic_vector((Addr_Width - 1) downto 0);
-          o_WB_Addr    : out    std_logic_vector((Addr_Width - 1) downto 0);
-          o_InstOpCode  : out     std_logic_vector(5 downto 0);
-          o_InstFunc  : out    std_logic_vector(5 downto 0);
-          o_BranchAddr  : out     std_logic_vector(N -1 downto 0);
-          o_ImmExt    : out    std_logic_vector((N - 1) downto 0);
-          o_CTRL_Sigs : out     std_logic_vector(8 downto 0)
+        i_Inst      : in     std_logic_vector((N - 1) downto 0);
+        i_ReadA     : in     std_logic_vector((N - 1) downto 0);
+        i_ReadB     : in     std_logic_vector((N - 1) downto 0);
+        i_WB_Addr    : in     std_logic_vector((Addr_Width - 1) downto 0);
+        i_BranchAddr  : in     std_logic_vector(N -1 downto 0);
+        i_ImmExt    : in     std_logic_vector((N - 1) downto 0);
+        i_CTRL_Sigs : in     std_logic_vector(8 downto 0);  
+        i_CLK       : in     std_logic;
+        i_RST       : in     std_logic;
+        o_Inst      : out     std_logic_vector((N - 1) downto 0);
+        o_ReadA     : out    std_logic_vector((N - 1) downto 0);
+        o_ReadB     : out    std_logic_vector((N - 1) downto 0);
+        -- o_AddrA     : out    std_logic_vector((Addr_Width - 1) downto 0);
+        -- o_AddrB     : out    std_logic_vector((Addr_Width - 1) downto 0);
+        o_WB_Addr    : out    std_logic_vector((Addr_Width - 1) downto 0);
+        o_BranchAddr  : out     std_logic_vector(N -1 downto 0);
+        o_ImmExt    : out    std_logic_vector((N - 1) downto 0);
+        o_CTRL_Sigs : out     std_logic_vector(8 downto 0)
   
       );
   end component;
@@ -166,13 +160,14 @@ end component;
         N : integer
     );
     port(
+        i_Inst      : in    std_logic_vector((N - 1) downto 0);
         i_ALU_Out   : in    std_logic_vector((N - 1) downto 0);
         i_W_Data    : in    std_logic_vector((N - 1) downto 0);
         i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CTRL_Sigs : in    std_logic_vector(3 downto 0);
         i_CLK       : in    std_logic;
-        i_Flush     : in    std_logic;
-        i_Stall     : in    std_logic;
+        i_RST       : in    std_logic;
+        o_Inst      : out    std_logic_vector((N - 1) downto 0);
         o_ALU_Out   : out   std_logic_vector((N - 1) downto 0);
         o_W_Data    : out   std_logic_vector((N - 1) downto 0);
         o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
@@ -186,17 +181,18 @@ end component;
         N : integer
     );
     port(
-        i_ALU       : in    std_logic_vector((N - 1) downto 0);
-        i_Mem_Data    : in    std_logic_vector((N - 1) downto 0);
-        i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
-        i_CTRL_Sigs : in    std_logic_vector(2 downto 0);
-        i_CLK       : in    std_logic;
-        i_Flush     : in    std_logic;
-        i_Stall     : in    std_logic;
-        o_ALU       : out   std_logic_vector((N - 1) downto 0);
-        o_Mem_Data    : out   std_logic_vector((N - 1) downto 0);
-        o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
-        o_CTRL_Sigs : out    std_logic_vector(2 downto 0)
+      i_Inst      : in    std_logic_vector((N - 1) downto 0);
+      i_ALU       : in    std_logic_vector((N - 1) downto 0);
+      i_Mem_Data    : in    std_logic_vector((N - 1) downto 0);
+      i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
+      i_CTRL_Sigs : in    std_logic_vector(2 downto 0);
+      i_CLK       : in    std_logic;
+      i_RST       : in    std_logic;
+      o_Inst      : out    std_logic_vector((N - 1) downto 0);
+      o_ALU       : out   std_logic_vector((N - 1) downto 0);
+      o_Mem_Data    : out   std_logic_vector((N - 1) downto 0);
+      o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
+      o_CTRL_Sigs : out    std_logic_vector(2 downto 0)
 
     );
 
@@ -325,12 +321,12 @@ end component;
   -- Instruction Signals
   
   
-  signal s_ID_inst_opcode, s_EX_inst_opcode, s_ID_inst_func, s_EX_inst_func   : std_logic_vector(5 downto 0);
-  signal s_inst_addr_RS, s_inst_Addr_RT, s_inst_Addr_RD, s_EX_WB_Addr, s_MEM_WB_Addr, s_WB_WB_Addr: std_logic_vector((REG_ADDR_WIDTH -1) downto 0);
-  signal s_inst_jumpAddr: std_logic_vector(25 downto 0);
-  signal s_inst_imm      : std_logic_vector((16-1) downto 0);
+  signal s_ID_Inst_opcode, s_EX_Inst_opcode, s_ID_Inst_func, s_EX_Inst_func   : std_logic_vector(5 downto 0);
+  signal s_Inst_addr_RS, s_Inst_Addr_RT, s_Inst_Addr_RD, s_EX_WB_Addr, s_MEM_WB_Addr, s_WB_WB_Addr: std_logic_vector((REG_ADDR_WIDTH -1) downto 0);
+  signal s_Inst_jumpAddr: std_logic_vector(25 downto 0);
+  signal s_Inst_imm      : std_logic_vector((16-1) downto 0);
 
-  signal s_ID_inst, s_ID_ImmExt, s_EX_ImmExt, s_shifted_imm       : std_logic_vector((DATA_WIDTH - 1) downto 0);
+  signal s_ID_Inst, s_EX_Inst, s_MEM_Inst, s_WB_Inst, s_ID_ImmExt, s_EX_ImmExt, s_shifted_imm       : std_logic_vector((DATA_WIDTH - 1) downto 0);
 
   signal s_PC, s_IF_PC4, s_ID_PC4, s_EX_Branch_Addr, s_branch_addr          : std_logic_vector((DATA_WIDTH -1) downto 0);
 
@@ -365,13 +361,9 @@ end component;
   --Write Back Data 
   signal s_WB_WBDataZero, s_WB_WBDataOne, s_WB_Data : std_logic_vector((DATA_WIDTH)-1 downto 0);
 
-  --Stall and Flush Signals
-  signal s_IFID_Stall, s_IDEX_Stall, s_EXMEM_Stall, s_MEMWB_Stall : std_logic;
-  signal s_IFID_Flush, s_IDEX_Flush, s_EXMEM_Flush, s_MEMWB_Flush : std_logic;
-  --TODO RST will set all flush values to 1 in the hazard detection unit
 begin
 
-  -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
+  -- TODO: This is required to be your final input to your Instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the Instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -395,7 +387,7 @@ begin
              we   => s_DMemWr,
              q    => s_DMemOut);
 
-  -- TODO: Ensure that s_Halt is connected to an output control signal produced from decoding the Halt instruction (Opcode: 01 0100)
+  -- TODO: Ensure that s_Halt is connected to an output control signal produced from decoding the Halt Instruction (Opcode: 01 0100)
   -- TODO: Ensure that s_Ovfl is connected to the overflow output of your ALU
 
   -- TODO: Implement the rest of your processor below this comment! 
@@ -421,14 +413,14 @@ begin
         o_S => s_IF_PC4
     );
 
-  s_inst_jumpAddr   <= s_inst(25 downto 0);
+  
 
 
     pcFetch: fetch_logic
     generic map(N=>N)
     port map(
         i_PC4             => s_IF_PC4,
-        i_JAddr           => s_inst_jumpAddr,
+        i_JAddr           => s_Inst_jumpAddr,
         i_BranchAddr      => s_EX_Branch_Addr,
         i_RegA            => s_EX_Reg_A,
         i_Branch          => s_EX_CTRL_Sigs(BRANCH), 
@@ -445,27 +437,26 @@ begin
     i_PC4 => s_IF_PC4,
     i_Inst => s_Inst,
     i_CLK => iCLK,
-    i_Flush => i_IFID_Flush,
-    i_Stall => i_IFID_Stall,
+    i_RST => iRST,
 
 ------------------------------DECODE------------------------------
     
     o_PC4 => s_ID_PC4,
-    o_Inst => s_ID_inst
+    o_Inst => s_ID_Inst
   );
 
-s_ID_inst_opcode  <= s_ID_inst(31 downto 26);
-s_inst_addr_RS    <= s_ID_inst(25 downto 21);
-s_inst_addr_RT    <= s_ID_inst(20 downto 16);
-s_inst_addr_RD    <= s_ID_inst(15 downto 11);
-s_ID_inst_func    <= s_ID_inst(5 downto 0);
-s_inst_imm        <= s_ID_inst(15 downto 0);
-
+s_ID_Inst_opcode  <= s_ID_Inst(31 downto 26);
+s_Inst_addr_RS    <= s_ID_Inst(25 downto 21);
+s_Inst_addr_RT    <= s_ID_Inst(20 downto 16);
+s_Inst_addr_RD    <= s_ID_Inst(15 downto 11);
+s_ID_Inst_func    <= s_ID_Inst(5 downto 0);
+s_Inst_imm        <= s_ID_Inst(15 downto 0);
+s_Inst_jumpAddr   <= s_ID_Inst(25 downto 0);
 
 CTRL: control
 port map(
-  i_opcode => s_ID_inst_opcode,                
-  i_func => s_ID_inst_func,                    
+  i_opcode => s_ID_Inst_opcode,                
+  i_func => s_ID_Inst_func,                    
 
   o_ALUSrc => s_ID_CTRL_Sigs(ALU_SRC),      -- Carries to EX
   o_MemtoReg => s_ID_CTRL_Sigs(MEM_TO_REG), -- Carries to MEM
@@ -487,8 +478,8 @@ muxRegWrite0: mux2t1_N
     generic map(N => REG_ADDR_WIDTH)
     port map(
       i_S => s_RegDst,
-      i_D0 => s_inst_addr_RT,
-      i_D1 => s_inst_addr_RD,
+      i_D0 => s_Inst_addr_RT,
+      i_D1 => s_Inst_addr_RD,
       o_O => s_regDstMux --sent through pipeline
     );
 
@@ -523,8 +514,8 @@ muxRegWrite0: mux2t1_N
       DATA_WIDTH => N
     )
     port map(
-      i_rA => s_inst_addr_RS,
-      i_rB => s_inst_addr_RT,
+      i_rA => s_Inst_addr_RS,
+      i_rB => s_Inst_addr_RT,
       i_rW => s_RegWrAddr,
       i_WE => s_RegWr,
       i_D => s_RegWrData,
@@ -536,7 +527,7 @@ muxRegWrite0: mux2t1_N
 
     signExt: extend16t32
     port map(
-        i_data   => s_inst_imm,
+        i_data   => s_Inst_imm,
         i_signed => s_signExt,
         o_data   => s_ID_ImmExt
     );
@@ -562,35 +553,33 @@ muxRegWrite0: mux2t1_N
     generic map(Addr_Width =>REG_ADDR_WIDTH,
       N=>N)
     port map(
+      i_Inst        => s_ID_Inst,
       i_ReadA       => s_ID_Reg_A,
       i_ReadB       => s_ID_Reg_B,
       i_WB_Addr     => s_regDstMux,
-      i_InstOpCode  => s_ID_inst_opcode,
-      i_InstFunc    => s_ID_inst_func,
       i_BranchAddr  => s_branch_addr,
       i_ImmExt      => s_ID_ImmExt,
       i_CTRL_Sigs   => s_ID_CTRL_Sigs,
       i_CLK         => iCLK,
-      i_Flush => i_IDEX_Flush,
-      i_Stall => i_IDEX_Stall,
+      i_RST => iRST,
 
       --------------------------------EXECUTE--------------------------------
-
+      o_Inst        => s_EX_Inst,
       o_ReadA       => s_EX_Reg_A,
       o_ReadB       => s_EX_Reg_B,
       o_WB_Addr     => s_EX_WB_Addr,
-      o_InstOpCode  => s_EX_inst_opcode,
-      o_InstFunc    => s_EX_inst_func,
       o_BranchAddr  => s_EX_Branch_Addr,
       o_ImmExt      => s_EX_ImmExt,
       o_CTRL_Sigs   => s_EX_CTRL_Sigs
     );
 
+    s_EX_Inst_opcode  <= s_EX_Inst(31 downto 26);
+    s_EX_Inst_func    <= s_EX_Inst(5 downto 0);
 
 ALUCtrl: ALUcontrol
 port map(
-  i_func => s_EX_inst_func,
-  i_opcode => s_EX_inst_opcode,
+  i_func => s_EX_Inst_func,
+  i_opcode => s_EX_Inst_opcode,
   s_out => s_ALUOP 
 );
 
@@ -667,16 +656,16 @@ ALU0: alu
       N => N
     )
     port map(
+      i_Inst      => s_EX_Inst,
       i_ALU_Out   => s_ALU_Out,
       i_W_Data    => s_EX_Reg_B,
       i_WB_Addr   => s_EX_WB_Addr,
       i_CTRL_Sigs => s_EX_CTRL_Sigs(3 downto 0),
       i_CLK       => iCLK,
-      i_Flush => i_EXMEM_Flush,
-      i_Stall => i_EXMEM_Stall,
+      i_RST => iRST,
 
 --------------------------------MEMORY--------------------------------
-
+      o_Inst      => s_MEM_Inst,
       o_ALU_Out   => s_DMemAddr,
       o_W_Data    => s_DMemData,
       o_WB_Addr   => s_MEM_WB_Addr,
@@ -693,17 +682,17 @@ ALU0: alu
       N => N
     )
     port map(
+      i_Inst      => s_MEM_Inst,
       i_ALU => s_DMemAddr,
       i_Mem_Data => s_DMemOut,
       i_WB_Addr => s_MEM_WB_Addr,
       i_CTRL_Sigs => s_MEM_CTRL_Sigs(2 downto 0),
       i_CLK => iCLK,
-      i_Flush => i_MEMWB_Flush,
-      i_Stall => i_MEMWB_Stall,
+      i_RST => iRST,
 
 ------------------------------WRITE-BACK------------------------------
 
-
+      o_Inst      => s_WB_Inst,
       o_ALU => s_WB_WBDataZero,
       o_Mem_Data => s_WB_WBDataOne,
       o_WB_Addr => s_WB_WB_Addr,

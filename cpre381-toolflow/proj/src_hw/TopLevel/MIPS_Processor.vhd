@@ -120,7 +120,8 @@ end component;
             i_PC4       : in     std_logic_vector((N - 1) downto 0);
             i_Inst      : in     std_logic_vector((N - 1) downto 0);
             i_CLK       : in     std_logic;
-            i_RST       : in    std_logic;
+            i_Flush     : in    std_logic;
+            i_Stall     : in    std_logic;
             o_PC4       : out    std_logic_vector((N - 1) downto 0);
             o_Inst      : out    std_logic_vector((N - 1) downto 0)
         );
@@ -143,7 +144,8 @@ end component;
           i_ImmExt    : in     std_logic_vector((N - 1) downto 0);
           i_CTRL_Sigs : in     std_logic_vector(8 downto 0);  
           i_CLK       : in     std_logic;
-          i_RST       : in    std_logic;
+          i_Flush     : in    std_logic;
+          i_Stall     : in    std_logic;
           o_ReadA     : out    std_logic_vector((N - 1) downto 0);
           o_ReadB     : out    std_logic_vector((N - 1) downto 0);
           -- o_AddrA     : out    std_logic_vector((Addr_Width - 1) downto 0);
@@ -169,7 +171,8 @@ end component;
         i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CTRL_Sigs : in    std_logic_vector(3 downto 0);
         i_CLK       : in    std_logic;
-        i_RST       : in    std_logic;
+        i_Flush     : in    std_logic;
+        i_Stall     : in    std_logic;
         o_ALU_Out   : out   std_logic_vector((N - 1) downto 0);
         o_W_Data    : out   std_logic_vector((N - 1) downto 0);
         o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
@@ -188,7 +191,8 @@ end component;
         i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CTRL_Sigs : in    std_logic_vector(2 downto 0);
         i_CLK       : in    std_logic;
-        i_RST       : in    std_logic;
+        i_Flush     : in    std_logic;
+        i_Stall     : in    std_logic;
         o_ALU       : out   std_logic_vector((N - 1) downto 0);
         o_Mem_Data    : out   std_logic_vector((N - 1) downto 0);
         o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
@@ -361,6 +365,10 @@ end component;
   --Write Back Data 
   signal s_WB_WBDataZero, s_WB_WBDataOne, s_WB_Data : std_logic_vector((DATA_WIDTH)-1 downto 0);
 
+  --Stall and Flush Signals
+  signal s_IFID_Stall, s_IDEX_Stall, s_EXMEM_Stall, s_MEMWB_Stall : std_logic;
+  signal s_IFID_Flush, s_IDEX_Flush, s_EXMEM_Flush, s_MEMWB_Flush : std_logic;
+  --TODO RST will set all flush values to 1 in the hazard detection unit
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -437,7 +445,8 @@ begin
     i_PC4 => s_IF_PC4,
     i_Inst => s_Inst,
     i_CLK => iCLK,
-    i_RST => iRST,
+    i_Flush => i_IFID_Flush,
+    i_Stall => i_IFID_Stall,
 
 ------------------------------DECODE------------------------------
     
@@ -555,8 +564,6 @@ muxRegWrite0: mux2t1_N
     port map(
       i_ReadA       => s_ID_Reg_A,
       i_ReadB       => s_ID_Reg_B,
-      -- i_AddrA       => --TODO Delete
-      -- i_AddrB       => --TODO Delete
       i_WB_Addr     => s_regDstMux,
       i_InstOpCode  => s_ID_inst_opcode,
       i_InstFunc    => s_ID_inst_func,
@@ -564,14 +571,13 @@ muxRegWrite0: mux2t1_N
       i_ImmExt      => s_ID_ImmExt,
       i_CTRL_Sigs   => s_ID_CTRL_Sigs,
       i_CLK         => iCLK,
-      i_RST => iRST,
+      i_Flush => i_IDEX_Flush,
+      i_Stall => i_IDEX_Stall,
 
       --------------------------------EXECUTE--------------------------------
 
       o_ReadA       => s_EX_Reg_A,
       o_ReadB       => s_EX_Reg_B,
-      -- o_AddrA       => --TODO DELETE
-      -- o_AddrB       => --TODO DELETE
       o_WB_Addr     => s_EX_WB_Addr,
       o_InstOpCode  => s_EX_inst_opcode,
       o_InstFunc    => s_EX_inst_func,
@@ -666,7 +672,8 @@ ALU0: alu
       i_WB_Addr   => s_EX_WB_Addr,
       i_CTRL_Sigs => s_EX_CTRL_Sigs(3 downto 0),
       i_CLK       => iCLK,
-      i_RST => iRST,
+      i_Flush => i_EXMEM_Flush,
+      i_Stall => i_EXMEM_Stall,
 
 --------------------------------MEMORY--------------------------------
 
@@ -691,7 +698,8 @@ ALU0: alu
       i_WB_Addr => s_MEM_WB_Addr,
       i_CTRL_Sigs => s_MEM_CTRL_Sigs(2 downto 0),
       i_CLK => iCLK,
-      i_RST => iRST,
+      i_Flush => i_MEMWB_Flush,
+      i_Stall => i_MEMWB_Stall,
 
 ------------------------------WRITE-BACK------------------------------
 
