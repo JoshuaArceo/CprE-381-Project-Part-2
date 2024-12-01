@@ -15,7 +15,9 @@ architecture Behavioral of tb_forwarding is
             MEM_RegWrite : in std_logic;                     
             WB_RegWrite  : in std_logic;                     
             forward_A    : out std_logic_vector(1 downto 0);
-            forward_B    : out std_logic_vector(1 downto 0)  
+            forward_B    : out std_logic_vector(1 downto 0);
+            forward_addr : out std_logic_vector(1 downto 0); 
+            forward_data : out std_logic_vector(1 downto 0)  
         );
     end component;
 
@@ -27,6 +29,8 @@ architecture Behavioral of tb_forwarding is
     signal WB_RegWrite  : std_logic;
     signal ForwardA     : std_logic_vector(1 downto 0);
     signal ForwardB     : std_logic_vector(1 downto 0);
+    signal ForwardAddr  : std_logic_vector(1 downto 0);
+    signal ForwardData  : std_logic_vector(1 downto 0);
 
 begin
     -- Instantiate the Forwarding Unit
@@ -39,7 +43,9 @@ begin
             MEM_RegWrite => MEM_RegWrite,
             WB_RegWrite => WB_RegWrite,
             forward_A => ForwardA,
-            forward_B => ForwardB
+            forward_B => ForwardB,
+            forward_addr => ForwardAddr,
+            forward_data => ForwardData
         );
 
     -- Test process

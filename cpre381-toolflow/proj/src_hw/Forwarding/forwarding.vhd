@@ -11,7 +11,9 @@ entity forwarding is
         MEM_RegWrite : in std_logic;                     -- Signal for MEM stage
         WB_RegWrite  : in std_logic;                     -- Signal for WB stage
         forward_A    : out std_logic_vector(1 downto 0); -- Forwarding control for rs
-        forward_B    : out std_logic_vector(1 downto 0)  -- Forwarding control for rt
+        forward_B    : out std_logic_vector(1 downto 0); -- Forwarding control for rt
+        forward_addr : out std_logic_vector(1 downto 0); -- Forwarding control for DMEM address
+        forward_data : out std_logic_vector(1 downto 0)  -- Forwarding control for DMEM data
     );
 end forwarding;
 
@@ -19,21 +21,38 @@ architecture Behavioral of forwarding is
 begin
     process(rs, rt, MEM_RD, WB_RD, MEM_RegWrite, WB_RegWrite)
     begin
+        -- Initialize outputs
         forward_A <= "00";
         forward_B <= "00";
-        -- Forwarding logic for rs
+        forward_addr <= "00";
+        forward_data <= "00";
+
+        -- ALU input A (rs)
         if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rs then
             forward_A <= "10"; 
         elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rs then
             forward_A <= "01";
         end if;
 
-        -- Forwarding logic for rt
+        -- ALU input B (rt)
         if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt then
             forward_B <= "10";
         elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt then
             forward_B <= "01";
         end if;
+
+        -- DMEM address
+        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rs then
+            forward_addr <= "10"; -- Forward from MEM stage
+        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rs then
+            forward_addr <= "01"; -- Forward from WB stage
+        end if;
+
+        -- DMEM data
+        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt then
+            forward_data <= "10"; -- Forward from MEM stage
+        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt then
+            forward_data <= "01"; -- Forward from WB stage
+        end if;
     end process;
 end Behavioral;
-
