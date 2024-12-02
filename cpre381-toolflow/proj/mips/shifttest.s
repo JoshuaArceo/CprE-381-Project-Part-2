@@ -1,14 +1,16 @@
 .data
-    arr: .word 160, 160, 10, 10, 160, 10, 90, 100, 0, 80, 50
+    arr: .word 160, 160, 160, 10, 160, 10, 90, 100, 0, 80, 50, 100, 0, 80, 50
 .text
 .globl main
 
+
+
+
 main:
     lui $s0, 0x1001 
-   
+    nop
+    nop
 loop:
-    nop
-    nop
     lw $s7, 0($s0)
     lw $t9, 4($s0)
     addi $s6, $0, 100
@@ -22,10 +24,16 @@ loop:
     beq $s7, $t9, exit
     nop
     nop
+    nop
     j loop
     nop
     nop
+    nop
+    nop
+
+
+
+
 
 exit:
 	halt
-
