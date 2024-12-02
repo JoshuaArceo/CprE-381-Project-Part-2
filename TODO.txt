@@ -1,0 +1,9 @@
+Writing this half asleep as a reminder of what needs to be done...
+
+Forwarding needs support for lw and sw operations. Most likely by implementing MUX's feeding into DMEM.
+
+Fixed forwarding to not overwrite B input of ALU for I Type instructions
+
+Once LW and SW work with forwarding and at most ONE nop, begin working on hazard control unit
+
+
