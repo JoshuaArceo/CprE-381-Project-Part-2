@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL; 
 
-entity forwarding is
+entity ForwardingUnit is
     port (
         rs           : in std_logic_vector(4 downto 0);  -- Register 1 in EX stage
         rt           : in std_logic_vector(4 downto 0);  -- Register 2 in EX stage
@@ -10,14 +10,15 @@ entity forwarding is
         WB_RD        : in std_logic_vector(4 downto 0);  -- Register in WB stage
         MEM_RegWrite : in std_logic;                     -- Signal for MEM stage
         WB_RegWrite  : in std_logic;                     -- Signal for WB stage
+        EX_Inst      : in std_logic_vector(31 downto 0); 
         forward_A    : out std_logic_vector(1 downto 0); -- Forwarding control for rs
         forward_B    : out std_logic_vector(1 downto 0); -- Forwarding control for rt
         forward_addr : out std_logic_vector(1 downto 0); -- Forwarding control for DMEM address
         forward_data : out std_logic_vector(1 downto 0)  -- Forwarding control for DMEM data
     );
-end forwarding;
+end ForwardingUnit;
 
-architecture Behavioral of forwarding is
+architecture Behavioral of ForwardingUnit is
 begin
     process(rs, rt, MEM_RD, WB_RD, MEM_RegWrite, WB_RegWrite)
     begin
@@ -35,9 +36,9 @@ begin
         end if;
 
         -- ALU input B (rt)
-        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt then
+        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt and EX_Inst(31 downto 26) = "000000" then
             forward_B <= "10";
-        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt then
+        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt and EX_Inst(31 downto 26) = "000000" then
             forward_B <= "01";
         end if;
 

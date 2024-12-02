@@ -7,13 +7,14 @@ entity MEMWB_Reg is
         N : integer := 32
     );
     port(
+        i_Inst      : in    std_logic_vector((N - 1) downto 0);
         i_ALU       : in    std_logic_vector((N - 1) downto 0);
         i_Mem_Data    : in    std_logic_vector((N - 1) downto 0);
         i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CTRL_Sigs : in    std_logic_vector(2 downto 0);
         i_CLK       : in    std_logic;
-        i_Flush     : in    std_logic;
-        i_Stall     : in    std_logic;
+        i_RST       : in    std_logic;
+        o_Inst      : out    std_logic_vector((N - 1) downto 0);
         o_ALU       : out   std_logic_vector((N - 1) downto 0);
         o_Mem_Data    : out   std_logic_vector((N - 1) downto 0);
         o_WB_Addr   : out   std_logic_vector((Addr_Width - 1) downto 0);
@@ -44,13 +45,24 @@ architecture structural of MEMWB_Reg is
     
 
     begin
+
+        Inst_Reg: reg_N
+        generic map(N => N)
+        port map(
+            i_D => i_Inst,
+            i_RST => i_RST,
+            i_CLK => i_CLK,
+            i_WE => '1',
+            o_Q => o_Inst
+        );
+
         ALU_Reg: reg_N
         generic map(N=>N)
         port map(
             i_D => i_ALU,
-            i_RST => i_Flush,
+            i_RST => i_RST,
             i_CLK => i_CLK,
-            i_WE => not i_Stall,
+            i_WE => '1',
             o_Q => o_ALU
         );
 
@@ -58,9 +70,9 @@ architecture structural of MEMWB_Reg is
         generic map(N => Addr_Width)
         port map(
             i_D => i_WB_Addr,
-            i_RST => i_Flush,
+            i_RST => i_RST,
             i_CLK => i_CLK,
-            i_WE => not i_Stall,
+            i_WE => '1',
             o_Q => o_WB_Addr
         );
         
@@ -68,9 +80,9 @@ architecture structural of MEMWB_Reg is
         generic map(N=>N)
         port map(
             i_D => i_Mem_Data,
-            i_RST => i_Flush,
+            i_RST => i_RST,
             i_CLK => i_CLK,
-            i_WE => not i_Stall,
+            i_WE => '1',
             o_Q => o_Mem_Data
         );
 
@@ -78,9 +90,9 @@ architecture structural of MEMWB_Reg is
         generic map(N => 3)
         port map(
             i_D => i_CTRL_Sigs,
-            i_RST => i_Flush,
+            i_RST => i_RST,
             i_CLK => i_CLK,
-            i_WE => not i_Stall,
+            i_WE => '1',
             o_Q => o_CTRL_Sigs
         );
 

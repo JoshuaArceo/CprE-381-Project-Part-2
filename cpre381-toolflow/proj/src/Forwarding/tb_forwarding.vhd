@@ -6,7 +6,7 @@ entity tb_forwarding is
 end tb_forwarding;
 
 architecture Behavioral of tb_forwarding is
-    component forwarding
+    component ForwardingUnit
         Port (
             rs           : in std_logic_vector(4 downto 0);  
             rt           : in std_logic_vector(4 downto 0);  
@@ -34,7 +34,7 @@ architecture Behavioral of tb_forwarding is
 
 begin
     -- Instantiate the Forwarding Unit
-    DUT: forwarding
+    DUT: ForwardingUnit
         Port map (
             rs => EX_RS,
             rt => EX_RT,

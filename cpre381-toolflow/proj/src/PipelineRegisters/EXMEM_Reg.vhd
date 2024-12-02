@@ -13,7 +13,8 @@ entity EXMEM_Reg is
         i_WB_Addr   : in    std_logic_vector((Addr_Width - 1) downto 0);
         i_CTRL_Sigs : in    std_logic_vector(3 downto 0);
         i_CLK       : in    std_logic;
-        i_RST       : in    std_logic;
+        i_Flush     : in    std_logic;
+        i_Stall     : in    std_logic;
         o_Inst      : out    std_logic_vector((N - 1) downto 0);
         o_ALU_Out   : out   std_logic_vector((N - 1) downto 0);
         o_W_Data    : out   std_logic_vector((N - 1) downto 0);
@@ -50,19 +51,19 @@ architecture structural of EXMEM_Reg is
         generic map(N => N)
         port map(
             i_D => i_Inst,
-            i_RST => i_RST,
+            i_RST => i_Flush,
             i_CLK => i_CLK,
-            i_WE => '1',
-            o_Q => o_Inst 
+            i_WE => not i_Stall,
+            o_Q => o_Inst
         );
 
         DataOut_Reg: reg_N
         generic map(N => N)
         port map(
             i_D => i_ALU_Out,
-            i_RST => i_RST,
+            i_RST => i_Flush,
             i_CLK => i_CLK,
-            i_WE => '1',
+            i_WE => not i_Stall,
             o_Q => o_ALU_Out 
         );
 
@@ -70,9 +71,9 @@ architecture structural of EXMEM_Reg is
         generic map(N => Addr_Width)
         port map(
             i_D => i_WB_Addr,
-            i_RST => i_RST,
+            i_RST => i_Flush,
             i_CLK => i_CLK,
-            i_WE => '1',
+            i_WE => not i_Stall,
             o_Q => o_WB_Addr
         );
         
@@ -80,9 +81,9 @@ architecture structural of EXMEM_Reg is
         generic map(N => N)
         port map(
             i_D => i_W_Data,
-            i_RST => i_RST,
+            i_RST => i_Flush,
             i_CLK => i_CLK,
-            i_WE => '1',
+            i_WE => not i_Stall,
             o_Q => o_W_Data
         );
 
@@ -90,9 +91,9 @@ architecture structural of EXMEM_Reg is
         generic map(N => 4)
         port map(
             i_D => i_CTRL_Sigs,
-            i_RST => i_RST,
+            i_RST => i_Flush,
             i_CLK => i_CLK,
-            i_WE => '1',
+            i_WE => not i_Stall,
             o_Q => o_CTRL_Sigs
         );
 
