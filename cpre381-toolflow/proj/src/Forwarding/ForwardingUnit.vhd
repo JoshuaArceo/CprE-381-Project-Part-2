@@ -42,18 +42,18 @@ begin
             forward_B <= "01";
         end if;
 
-        -- DMEM address
-        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rs then
-            forward_addr <= "10"; -- Forward from MEM stage
-        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rs then
-            forward_addr <= "01"; -- Forward from WB stage
-        end if;
+        -- -- DMEM address
+        -- if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rs then
+        --     forward_addr <= "10"; -- Forward from MEM stage
+        -- elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rs then
+        --     forward_addr <= "01"; -- Forward from WB stage
+        -- end if;
 
         -- DMEM data
-        if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt then
-            forward_data <= "10"; -- Forward from MEM stage
-        elsif WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt then
-            forward_data <= "01"; -- Forward from WB stage
-        end if;
+        -- if MEM_RegWrite = '1' and MEM_RD /= "00000" and MEM_RD = rt then
+            -- forward_data <= "10"; 
+        -- if WB_RegWrite = '1' and WB_RD /= "00000" and WB_RD = rt then
+        --     forward_data <= "01"; 
+        -- end if;
     end process;
 end Behavioral;
