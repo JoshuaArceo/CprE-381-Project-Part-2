@@ -19,5 +19,6 @@ begin
         o_F <=    i_A  when "00",
                   i_B  when "01",
                   i_C  when "10",
+                  i_C  when "11",
                   (others => '0') when others;
 end dataflow;
