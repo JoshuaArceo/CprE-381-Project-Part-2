@@ -51,9 +51,8 @@ outer_loop:
       addi $s1, $s1, 1
 
 print_loop:
-  nop
-  addi $t0, $t0, 1                  #i++
   addi $t2, $t2, 4                  #addr itr i += 4
+  addi $t0, $t0, 1                  #i++
   nop
   nop
   bne $t0, $s1, print_loop          #i != n

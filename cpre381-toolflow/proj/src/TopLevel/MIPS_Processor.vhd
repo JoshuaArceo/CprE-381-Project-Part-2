@@ -334,17 +334,18 @@ end component;
 
       component ForwardingUnit is
         port (
-            rs           : in std_logic_vector(4 downto 0);  -- Register 1 in EX stage
-            rt           : in std_logic_vector(4 downto 0);  -- Register 2 in EX stage
-            MEM_RD       : in std_logic_vector(4 downto 0);  -- Register in MEM stage
-            WB_RD        : in std_logic_vector(4 downto 0);  -- Register in WB stage
-            MEM_RegWrite : in std_logic;                     -- Signal for MEM stage
-            WB_RegWrite  : in std_logic;                     -- Signal for WB stage
-            EX_Inst      : in std_logic_vector(31 downto 0); 
-            forward_A    : out std_logic_vector(1 downto 0); -- Forwarding control for rs
-            forward_B    : out std_logic_vector(1 downto 0); -- Forwarding control for rt
-            forward_addr : out std_logic_vector(1 downto 0); -- Forwarding control for DMEM address
-            forward_data : out std_logic_vector(1 downto 0)  -- Forwarding control for DMEM data
+          EX_Inst      : in std_logic_vector(31 downto 0); 
+          MEM_Inst     : in std_logic_vector(31 downto 0); 
+          WB_Inst      : in std_logic_vector(31 downto 0); 
+          MEM_Dst      : in std_logic_vector(4 downto 0);
+          WB_Dst       : in std_logic_vector(4 downto 0); 
+          MEM_RegWrite : in std_logic;                     -- Signal for MEM stage
+          WB_RegWrite  : in std_logic;                     -- Signal for WB stage
+          ALU_Src      : in std_logic;
+          forward_A    : out std_logic_vector(1 downto 0); -- Forwarding control for rs
+          forward_B    : out std_logic_vector(1 downto 0); -- Forwarding control for rt
+          forward_data_reg : out std_logic_vector(1 downto 0); -- Forwarding control for DMEM address
+          forward_data : out std_logic_vector(1 downto 0)  -- Forwarding control for DMEM data
         );
     end component; 
     
@@ -382,6 +383,9 @@ end component;
   signal s_MEM_CTRL_Sigs  : std_logic_vector(3 downto 0);
   signal s_WB_CTRL_Sigs   : std_logic_vector(2 downto 0);
 
+  signal s_MEM_DMem_Data, s_MEM_WBReg_Data, s_EX_DMemData : std_logic_vector((DATA_WIDTH - 1) downto 0);
+  
+
 -- Ctrlsignals:
 -- 0:  Mem2Reg
 -- 1:  Halt
@@ -402,7 +406,7 @@ end component;
   --TODO RST will set all flush values to 1 in the hazard detection unit
 
   --Forwarding signals
-  signal s_Fwd_A, s_Fwd_B, s_throw: std_logic_vector(1 downto 0);
+  signal s_Fwd_A, s_Fwd_B, s_Fwd_D, s_Fwd_D_R: std_logic_vector(1 downto 0);
 
 begin
 
@@ -450,7 +454,7 @@ begin
     i_D => s_PC,
     i_RST => iRST,
     i_CLK => iCLK,
-    i_WE => '1',
+    i_WE => not s_IFID_Stall,
     o_Q => s_NextInstAddr
   );
 
@@ -636,17 +640,18 @@ port map(
 
 Fwd: ForwardingUnit
   port map(
-      rs              => s_EX_Inst(25 downto 21),    -- Register 1 in EX stage
-      rt              => s_EX_Inst(20 downto 16),    -- Register 2 in EX stage
-      MEM_RD          => s_MEM_WB_Addr,   -- Register in MEM stage
-      WB_RD           => s_WB_WB_Addr,    -- Register in WB stage
+      EX_Inst         => s_EX_Inst,
+      MEM_Inst        => s_MEM_Inst, 
+      WB_Inst         => s_WB_Inst,
+      MEM_Dst         => s_MEM_WB_Addr,   -- Register in MEM stage
+      WB_DST          => s_WB_WB_Addr,    -- Register in WB stage
       MEM_RegWrite    => s_MEM_CTRL_Sigs(REG_WRITE), -- Signal for MEM stage
       WB_RegWrite     => s_WB_CTRL_Sigs(REG_WRITE),  -- Signal for WB stage
-      EX_Inst         => s_EX_Inst,
+      ALU_Src         => s_EX_CTRL_Sigs(ALU_SRC),
       forward_A       => s_Fwd_A,                    -- Forwarding control for rs
       forward_B       => s_Fwd_B,                    -- Forwarding control for rt
-      forward_addr    => s_throw,                    -- Forwarding control for DMEM address
-      forward_data    => s_throw                     -- Forwarding control for DMEM data
+      forward_data_reg    => s_Fwd_D_R,                    -- Forwarding control for DMEM address
+      forward_data    => s_Fwd_D                     -- Forwarding control for DMEM data
   );
 
 
@@ -736,6 +741,15 @@ ALU0: alu
        o_Q   => s_Ovfl
     );
 
+    WriteDataMux: mux2t1_N
+    generic map(N => N)
+    port map(
+      i_S  => s_FWD_D(1),
+      i_D0 => s_EX_Reg_B,
+      i_D1 => s_WB_Data,
+      o_O  => s_EX_DMemData
+      );
+
 
     EXMEM: EXMEM_Reg
     generic map(
@@ -745,7 +759,7 @@ ALU0: alu
     port map(
       i_Inst      => s_EX_Inst,
       i_ALU_Out   => s_ALU_Out,
-      i_W_Data    => s_EX_Reg_B,
+      i_W_Data    => s_EX_DMemData,
       i_WB_Addr   => s_EX_WB_Addr,
       i_CTRL_Sigs => s_EX_CTRL_Sigs(3 downto 0),
       i_CLK       => iCLK,
@@ -755,14 +769,23 @@ ALU0: alu
 --------------------------------MEMORY--------------------------------
       o_Inst      => s_MEM_Inst,
       o_ALU_Out   => s_DMemAddr,
-      o_W_Data    => s_DMemData,
+      o_W_Data    => s_MEM_DMem_Data,
       o_WB_Addr   => s_MEM_WB_Addr,
       o_CTRL_Sigs => s_MEM_CTRL_Sigs 
     );
 
     s_DMemWr <= s_MEM_CTRL_Sigs(MEM_WRITE);
+  
     
-
+    fwdDMemMux: mux3t1_N
+    generic map(N => N)
+    port map(
+      i_A   => s_MEM_DMem_Data,
+      i_B   => s_WB_Data,
+      i_C   => s_MEM_WBReg_Data,
+      i_Sel => s_Fwd_D,
+      o_F   => s_DMemData
+    );
 
     MEMWB: MEMWB_Reg
     generic map(
