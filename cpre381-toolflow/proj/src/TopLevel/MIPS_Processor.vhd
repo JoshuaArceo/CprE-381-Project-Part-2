@@ -769,7 +769,7 @@ ALU0: alu
     port map(
       i_A   => s_MEM_DMem_Data,
       i_B   => s_WB_Data,
-      i_C   => s_throw,
+      i_C   => s_MEM_DMem_Data,
       i_Sel => s_Fwd_D,
       o_F   => s_DMemData
     );
