@@ -14,7 +14,7 @@ main:
     add $t2, $t0, $t1 # $t2 = $t0 + $t1
     sub $t3, $t0, $t1 # $t3 = $t0 - $t1
     addi $t2, $t2, 8 # $t2 = $t2 + 8
-    subi $t3, $t3, 9 # $t3 = $t3 - 9
+    addi $t3, $t3, -9 # $t3 = $t3 - 9
 
     # Logical instructions
     and $t5, $t0, $t1 # $t5 = $t0 & $t1

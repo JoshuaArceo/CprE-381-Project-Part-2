@@ -106,6 +106,7 @@ end component;
         i_Jump            : in std_logic;  
         i_JR              : in std_logic;
         i_BNE             : in std_logic;  
+        o_BRANCHING       : out std_logic;
         o_Next_PC         : out std_logic_vector(N - 1 downto 0) 
         );
       end component;
@@ -349,6 +350,35 @@ end component;
         );
     end component; 
     
+    component HazardDetection is
+      port (
+  
+
+          IF_Inst      : in std_logic_vector(31 downto 0); 
+          ID_Inst      : in std_logic_vector(31 downto 0); 
+          EX_Inst      : in std_logic_vector(31 downto 0); 
+          MEM_Inst     : in std_logic_vector(31 downto 0); 
+          WB_Inst      : in std_logic_vector(31 downto 0); 
+  
+          ID_Dst      : in std_logic_vector(4 downto 0);
+          EX_Dst       : in std_logic_vector(4 downto 0); 
+          MEM_Dst      : in std_logic_vector(4 downto 0);
+          WB_Dst       : in std_logic_vector(4 downto 0); 
+
+          i_RST           : in std_logic;
+          i_EX_branch     : in std_logic;
+          
+  
+          o_IFID_Flush     : out std_logic;
+          o_IFID_Stall     : out std_logic;
+          o_IDEX_Flush     : out std_logic;
+          o_IDEX_Stall     : out std_logic;
+          o_EXMEM_Flush    : out std_logic;
+          o_EXMEM_Stall    : out std_logic;
+          o_MEMWB_Flush    : out std_logic;
+          o_MEMWB_Stall    : out std_logic
+      );
+  end component;
 
     signal s_ofDel1, s_ofDel2  : std_logic;
 
@@ -405,16 +435,19 @@ end component;
   signal s_IFID_Flush, s_IDEX_Flush, s_EXMEM_Flush, s_MEMWB_Flush : std_logic;
   --TODO RST will set all flush values to 1 in the hazard detection unit
 
+  signal s_HzdBrnch : std_logic;
+
+
   --Forwarding signals
   signal s_Fwd_A, s_Fwd_B, s_Fwd_D, s_Fwd_D_R: std_logic_vector(1 downto 0);
 
 begin
 
 --TODO remove when hazard control implemented
-  s_IFID_Flush  <= iRst;
-  s_IDEX_Flush  <= iRst;
-  s_EXMEM_Flush <= iRst; 
-  s_MEMWB_Flush <= iRst; 
+  -- s_IFID_Flush  <= iRst;
+  -- s_IDEX_Flush  <= iRst;
+  -- s_EXMEM_Flush <= iRst; 
+  -- s_MEMWB_Flush <= iRst; 
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
   with iInstLd select
@@ -479,6 +512,7 @@ begin
         i_Jump            => s_Jump,
         i_JR              => s_EX_CTRL_Sigs(JUMP_RET),
         i_BNE             => s_EX_CTRL_Sigs(BRANCH_NE),
+        o_BRANCHING       => s_HzdBrnch,
         o_Next_PC         => s_PC 
     );
 
@@ -527,6 +561,33 @@ port map(
   o_signExt => s_signExt                    -- Stays in ID
 );
 
+HzdDetection: HazardDetection
+port map(
+
+
+  IF_Inst      => s_Inst,
+  ID_Inst      => s_ID_Inst,
+  EX_Inst      => s_EX_Inst,
+  MEM_Inst     => s_MEM_Inst,
+  WB_Inst      => s_WB_Inst,
+
+  ID_Dst       => s_regDstMux,
+  EX_Dst       => s_EX_WB_Addr, 
+  MEM_Dst      => s_MEM_WB_Addr,
+  WB_Dst       => s_WB_WB_Addr, 
+
+  i_RST           => iRST,
+  i_EX_branch     => s_HzdBrnch,
+
+  o_IFID_Flush     =>  s_IFID_Flush,
+  o_IFID_Stall     =>  s_IFID_Stall,
+  o_IDEX_Flush     =>  s_IDEX_Flush,
+  o_IDEX_Stall     =>  s_IDEX_Stall,
+  o_EXMEM_Flush    =>  s_EXMEM_Flush,
+  o_EXMEM_Stall    =>  s_EXMEM_Stall,
+  o_MEMWB_Flush    =>  s_MEMWB_Flush,
+  o_MEMWB_Stall    =>  s_MEMWB_Stall
+  );
 
 muxRegWrite0: mux2t1_N
     generic map(N => REG_ADDR_WIDTH)

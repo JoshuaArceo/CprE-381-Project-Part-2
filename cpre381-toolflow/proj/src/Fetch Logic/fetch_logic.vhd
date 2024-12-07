@@ -13,6 +13,7 @@ entity fetch_logic is
         i_Jump            : in std_logic;  
         i_JR              : in std_logic;
         i_BNE             : in std_logic;  
+        o_BRANCHING       : out std_logic;
         o_Next_PC         : out std_logic_vector(N - 1 downto 0) 
         );
 
@@ -121,7 +122,6 @@ begin
         o_F => s_OutSel
     );
 
-
     outMux : mux2t1_N
     port map(
         i_S => s_OutSel,
@@ -130,6 +130,8 @@ begin
         o_O => o_Next_PC
     );
 
+
+    o_BRANCHING <= s_BranchSelect;
 
 
 END structural;
