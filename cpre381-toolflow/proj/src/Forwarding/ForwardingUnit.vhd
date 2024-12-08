@@ -46,41 +46,58 @@ architecture Behavioral of ForwardingUnit is
 
         
 
-            if MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RS then
-                forward_A <= "10";
-
+            
+            if MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RS and MEM_Inst(31 downto 26) /= "100011"then
+            forward_A <= "10";
             elsif WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RS then
                 forward_A <= "01";
-
+            
             end if;
 
-            if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and 
+            
+            if MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) = "000000" or  EX_Inst(5 downto 0) = "000010" or  EX_Inst(5 downto 0) = "000011") then
+                forward_A <= "10";
+            elsif WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) = "000000" or  EX_Inst(5 downto 0) = "000010" or  EX_Inst(5 downto 0) = "000011") then
+                forward_A <= "01";
+            end if;
+
+            -- if EX_Inst(31 downto 26) /= "001000" or EX_Inst(31 downto 26) /= "001001" 
+            -- or EX_Inst(31 downto 26) /= "001010" or EX_Inst(31 downto 26) /= "001100" 
+            -- or EX_Inst(31 downto 26) /= "001101" or EX_Inst(31 downto 26) /= "001110" 
+            -- or EX_Inst(31 downto 26) /= "001111" then
+
+            if MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and 
+            ((EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011"))
+            or EX_Inst(31 downto 26) = "000100" or EX_Inst(31 downto 26) = "000101")
+            then
+                forward_B <= "10";
+            elsif WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and 
             ((EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011"))
             or EX_Inst(31 downto 26) = "000100" or EX_Inst(31 downto 26) = "000101")
             then
                 forward_B <= "01";
 
 
-            elsif MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and 
-            ((EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011"))
-            or EX_Inst(31 downto 26) = "000100" or EX_Inst(31 downto 26) = "000101")
-            then
-                    forward_B <= "10";
+           
 
             end if;
+            -- end if;
+
+           
 
 
-            if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) = "000000" or  EX_Inst(5 downto 0) = "000010" or  EX_Inst(5 downto 0) = "000011") then
-                forward_A <= "01";
-            end if;
 
         if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_MEM_RT and MEM_Inst(31 downto 26) = "101011" then
-            forward_data <= "01"; 
+            forward_data(0) <= '1'; 
+        end if;
+        if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and EX_Inst(31 downto 26) = "101011" then
+                forward_data(1) <= '1'; 
+        elsif MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and EX_Inst(31 downto 26) = "101011"then
+            forward_data(1) <= '1'; 
         end if;
 
-        if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and EX_Inst(31 downto 26) = "101011"then
-            forward_data <= "10"; 
-        end if;
+        
+        
 
     end process;
 end Behavioral;

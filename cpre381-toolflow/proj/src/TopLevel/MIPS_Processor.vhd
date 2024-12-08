@@ -847,14 +847,13 @@ ALU0: alu
     s_DMemWr <= s_MEM_CTRL_Sigs(MEM_WRITE);
   
     
-    fwdDMemMux: mux3t1_N
+    fwdDMemMux: mux2t1_N
     generic map(N => N)
     port map(
-      i_A   => s_MEM_DMem_Data,
-      i_B   => s_WB_Data,
-      i_C   => s_MEM_WBReg_Data,
-      i_Sel => s_Fwd_D,
-      o_F   => s_DMemData
+      i_S => s_Fwd_D(0),
+      i_D0   => s_MEM_DMem_Data,
+      i_D1   => s_WB_Data,
+      o_O   => s_DMemData
     );
 
     MEMWB: MEMWB_Reg

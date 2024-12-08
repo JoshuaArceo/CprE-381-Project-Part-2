@@ -65,7 +65,7 @@ architecture mixed of HazardDetection is
         s_WB_RT    <= WB_Inst(20 downto 16);
         s_WB_RD    <= WB_Inst(15 downto 11);
 
-        process(IF_Inst, ID_Inst, EX_Inst, WB_Inst, EX_Dst, MEM_Dst, i_RST, i_EX_branch, 
+        process(IF_Inst, ID_Inst, EX_Inst, WB_Inst, EX_Dst, MEM_Dst, i_RST, 
         s_IF_RS, s_IF_RT, s_IF_RD, s_ID_RS, s_ID_RT, s_ID_RD, s_EX_RS, s_EX_RT, s_EX_RD, 
         s_MEM_RS, s_MEM_RT, s_MEM_RD, s_WB_RS, s_WB_RT, s_WB_RD,
         EX_WriteToReg, MEM_WriteToReg, WB_WriteToReg)
@@ -100,22 +100,8 @@ architecture mixed of HazardDetection is
 
 
         
-            --Stall for LW forwarding
-                if(EX_Inst = ID_Inst) then
-                    o_IFID_Stall  <= '0';
-                    o_IDEX_Stall  <= '0';
-                   
-                    elsif(EX_Inst(31 downto 26) ="100011" and (EX_Dst = s_ID_RS or EX_Dst = s_ID_RT)) then 
-                        o_IFID_Stall  <= '1';
-                        o_PC_Stall    <= '1';
-                end if;
+            
 
-                --Ensure no double writes
-                if(WB_Inst = Mem_Inst) 
-                and MEM_Dst = WB_Dst and MEM_WriteToReg = '1' and WB_WriteToReg = '1'
-                then
-                    o_EXMEM_Flush <= '1';
-                end if;
 
 
                 
@@ -143,23 +129,54 @@ architecture mixed of HazardDetection is
             end if;
 
             --JAL Stalling
-                if(EX_Inst(31 downto 26) = "000011") then
-                    o_IFID_Flush <= '1';
-                    o_PC_Stall    <= '1';
 
-                elsif(IF_Inst(31 downto 26) = "000011" and (MEM_WriteToReg ='1'))
-                    then o_IFID_Stall  <= '1';
-                    o_PC_Stall    <= '1';
-                elsif(ID_Inst(31 downto 26) = "000011" )
-                    then o_IFID_Stall  <= '1';
+            if(IF_Inst(31 downto 26) = "000011" and (((MEM_WriteToReg ='1') and MEM_Dst /= "00") or (EX_WriteToReg='1'and EX_Dst /= "00")))
+                then o_IFID_Stall  <= '1';
+                o_PC_Stall    <= '1';
                 end if;
 
-                if(IF_Inst(31 downto 26) = "000011") and ID_Inst = WB_Inst then
-                    o_IFID_Flush <= '1';
-                    o_IDEX_Flush <= '1';
-                end if;
+            -- if(EX_Inst(31 downto 26) = "000011") then
+            --     o_IFID_Stall <= '0';
+            --     o_PC_Stall    <= '0';
+            -- elsif(EX_Inst(31 downto 26) = "000011") then
+            --         o_IFID_Flush <= '1';
+            --         o_IFID_Stall <= '0';
+            --         o_PC_Stall    <= '1';
 
-            
+            -- elsif(IF_Inst(31 downto 26) = "000011" and (((MEM_WriteToReg ='1') and MEM_Dst /= "00") or (EX_WriteToReg='1'and EX_Dst /= "00")))
+            --     then o_IFID_Stall  <= '1';
+            --     o_PC_Stall    <= '1';
+            -- elsif(ID_Inst(31 downto 26) = "000011" )
+            --     then o_IFID_Stall  <= '1';
+            -- end if;
+
+                -- if(IF_Inst(31 downto 26) = "000011") and ID_Inst = WB_Inst and ID_Inst /= X"00000000" then
+                --     o_IFID_Flush <= '1';
+                --     o_IDEX_Flush <= '1';
+                -- end if;
+
+            --Stall for LW forwarding
+            if(EX_Inst = ID_Inst) and EX_Inst(31 downto 26) = "100011" then
+                o_IFID_Stall  <= '0';
+                if IF_Inst(31 downto 26) /= "100011" and IF_Inst /= ID_Inst then
+                    o_IFID_Flush <= '1';
+                    o_PC_Stall    <= '1';
+                end if;
+                
+               
+                elsif(ID_Inst(31 downto 26) ="100011" and (ID_Dst = s_IF_RS or ID_Dst = s_IF_RT)) then 
+                    o_IFID_Stall  <= '1';
+                    -- o_IDEX_Stall  <= '1';
+                    o_PC_Stall    <= '1';
+
+            end if;
+
+                --Ensure no double writes
+                if(WB_Inst = Mem_Inst) 
+                and MEM_Dst = WB_Dst and MEM_WriteToReg = '1' and WB_WriteToReg = '1' and o_IFID_Stall = '1' and ID_Inst(31 downto 26) = "100011"
+                then
+                    o_EXMEM_Flush <= '1';
+                end if;
 
         end process;
 
