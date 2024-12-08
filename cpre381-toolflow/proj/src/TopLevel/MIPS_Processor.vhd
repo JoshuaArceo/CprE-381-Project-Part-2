@@ -365,6 +365,10 @@ end component;
           MEM_Dst      : in std_logic_vector(4 downto 0);
           WB_Dst       : in std_logic_vector(4 downto 0); 
 
+          EX_WriteToReg   : in std_logic;
+          MEM_WriteToReg  : in std_logic;
+          WB_WriteToReg   : in std_logic;
+
           i_RST           : in std_logic;
           i_EX_branch     : in std_logic;
           
@@ -575,6 +579,10 @@ port map(
   EX_Dst       => s_EX_WB_Addr, 
   MEM_Dst      => s_MEM_WB_Addr,
   WB_Dst       => s_WB_WB_Addr, 
+
+  EX_WriteToReg   => s_EX_CTRL_Sigs(REG_WRITE),
+  MEM_WriteToReg  => s_MEM_CTRL_Sigs(REG_WRITE),
+  WB_WriteToReg   => s_WB_CTRL_Sigs(REG_WRITE),
 
   i_RST           => iRST,
   i_EX_branch     => s_HzdBrnch,
