@@ -372,7 +372,7 @@ end component;
           i_RST           : in std_logic;
           i_EX_branch     : in std_logic;
           
-  
+          o_PC_Stall       : out std_logic;
           o_IFID_Flush     : out std_logic;
           o_IFID_Stall     : out std_logic;
           o_IDEX_Flush     : out std_logic;
@@ -411,7 +411,7 @@ end component;
   signal s_ALU_A_In, s_ALU_B_In, s_ALU_A_Src, s_ALU_B_Src, s_ALU_Out   :std_logic_vector((DATA_WIDTH - 1) downto 0);
 
   -- control signals
-  signal s_ALUSrc, s_Shift, s_MemtoReg, s_JAL, s_JR, s_Jump, s_Branch, s_BNE, s_RegDst, s_signExt : std_logic;
+  signal s_JAL, s_Jump, s_RegDst, s_signExt : std_logic;
   signal s_ID_CTRL_Sigs   : std_logic_vector(8 downto 0);
   signal s_EX_CTRL_Sigs   : std_logic_vector(8 downto 0);
   signal s_MEM_CTRL_Sigs  : std_logic_vector(3 downto 0);
@@ -435,7 +435,7 @@ end component;
   signal s_WB_WBDataZero, s_WB_WBDataOne, s_WB_Data : std_logic_vector((DATA_WIDTH)-1 downto 0);
 
   --Stall and Flush Signals
-  signal s_IFID_Stall, s_IDEX_Stall, s_EXMEM_Stall, s_MEMWB_Stall : std_logic := '0';
+  signal s_PC_Stall, s_IFID_Stall, s_IDEX_Stall, s_EXMEM_Stall, s_MEMWB_Stall : std_logic := '0';
   signal s_IFID_Flush, s_IDEX_Flush, s_EXMEM_Flush, s_MEMWB_Flush : std_logic;
   --TODO RST will set all flush values to 1 in the hazard detection unit
 
@@ -491,7 +491,7 @@ begin
     i_D => s_PC,
     i_RST => iRST,
     i_CLK => iCLK,
-    i_WE => not s_IFID_Stall,
+    i_WE => not s_PC_Stall,
     o_Q => s_NextInstAddr
   );
 
@@ -587,6 +587,7 @@ port map(
   i_RST           => iRST,
   i_EX_branch     => s_HzdBrnch,
 
+  o_PC_Stall       => s_PC_Stall,
   o_IFID_Flush     =>  s_IFID_Flush,
   o_IFID_Stall     =>  s_IFID_Stall,
   o_IDEX_Flush     =>  s_IDEX_Flush,

@@ -26,7 +26,7 @@ entity HazardDetection is
         i_RST           : in std_logic;
         i_EX_branch     : in std_logic;
         
-
+        o_PC_Stall       : out std_logic;
         o_IFID_Flush     : out std_logic;
         o_IFID_Stall     : out std_logic;
         o_IDEX_Flush     : out std_logic;
@@ -74,6 +74,8 @@ architecture mixed of HazardDetection is
         o_IDEX_Stall  <= '0';
         o_EXMEM_Stall <= '0';
         o_MEMWB_Stall <= '0';
+        o_PC_Stall    <= '0';
+
 
 
         o_IFID_Flush  <= i_RST;
@@ -81,60 +83,83 @@ architecture mixed of HazardDetection is
         o_EXMEM_Flush <= i_RST;
         o_MEMWB_Flush <= i_RST;
 
-         --TODO STALL FOR JUMP
-        --  if ID_Inst = EX_Inst and ID_Inst = "000010"
-        --  then
-        --      o_IFID_Stall <= '0';
-        --  elsif(ID_Inst(31 downto 26) = "000010") then
-        --      o_IFID_Stall <= '1';
-        --  end if;
+       
+
+  --TODO STALL FOR JUMP
+    if(EX_Inst(31 downto 26) = "000010") then
+        o_IFID_Flush <= '1';
+        o_PC_Stall    <= '1';
+    elsif  ID_Inst(31 downto 26) = "000010" then
+        o_PC_Stall <= '0';
+    elsif  IF_Inst(31 downto 26) = "000010"
+         then
+            -- o_PC_Stall    <= '1';
+    
+    end if;
 
 
 
         
-         
+            --Stall for LW forwarding
                 if(EX_Inst = ID_Inst) then
                     o_IFID_Stall  <= '0';
                     o_IDEX_Stall  <= '0';
                    
                     elsif(EX_Inst(31 downto 26) ="100011" and (EX_Dst = s_ID_RS or EX_Dst = s_ID_RT)) then 
                         o_IFID_Stall  <= '1';
+                        o_PC_Stall    <= '1';
                 end if;
 
-                if(WB_Inst = Mem_Inst) and MEM_Dst = WB_Dst and MEM_WriteToReg = '1' and WB_WriteToReg = '1' and not falling_edge(MEM_WriteToReg)and not falling_edge(WB_WriteToReg) then
-                    o_MEMWB_Flush <= '1';
+                --Ensure no double writes
+                if(WB_Inst = Mem_Inst) 
+                and MEM_Dst = WB_Dst and MEM_WriteToReg = '1' and WB_WriteToReg = '1'
+                then
+                    o_EXMEM_Flush <= '1';
                 end if;
 
-               
+
                 
-
-                --Stall for 2 cycles on JR
+                --Stall for JR
                 if(EX_Inst(31 downto 26) ="000000" and EX_Inst(5 downto 0) = "001000")
                 then o_IFID_Stall  <= '0';
                     o_IFID_Flush <= '1';
                 elsif(ID_Inst(31 downto 26) = "000000" and ID_Inst(5 downto 0) = "001000")
                     then o_IFID_Stall  <= '1';
+                    o_PC_Stall    <= '1';
+
                 end if;
                 
-
+                --Branch Stalling
             if(EX_Inst(31 downto 26) ="000100" or EX_Inst(31 downto 26) ="000101")
                 then o_IFID_Stall  <= '0';
                 if i_EX_branch ='1' then
                     o_IFID_Flush <= '1';
+
                 end if;
             elsif(ID_Inst(31 downto 26) ="000100" or ID_Inst(31 downto 26) ="000101")
                 then o_IFID_Stall  <= '1';
+                o_PC_Stall    <= '1';
+
             end if;
 
-            --TODO STALL JAL UNTIL PAST INSTS ARENT R TYPE WITH WB 1
-                if(EX_Inst(31 downto 26) ="000011")
-                then o_IFID_Stall  <= '0';
-                o_IFID_Flush <= '1'; 
-                o_IDEX_Flush <= '1';     
+            --JAL Stalling
+                if(EX_Inst(31 downto 26) = "000011") then
+                    o_IFID_Flush <= '1';
+                    o_PC_Stall    <= '1';
 
-                elsif(IF_Inst(31 downto 26) = "000011" and (WB_WriteToReg ='1'))
+                elsif(IF_Inst(31 downto 26) = "000011" and (MEM_WriteToReg ='1'))
+                    then o_IFID_Stall  <= '1';
+                    o_PC_Stall    <= '1';
+                elsif(ID_Inst(31 downto 26) = "000011" )
                     then o_IFID_Stall  <= '1';
                 end if;
+
+                if(IF_Inst(31 downto 26) = "000011") and ID_Inst = WB_Inst then
+                    o_IFID_Flush <= '1';
+                    o_IDEX_Flush <= '1';
+                end if;
+
+            
 
         end process;
 

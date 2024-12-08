@@ -25,7 +25,6 @@ main:
     j yup
 
 back:
-    nop
     nor $t2, $t2, $s3
     xor $t3, $s5, $s4
     xori $t4, $t4, 0xABCD

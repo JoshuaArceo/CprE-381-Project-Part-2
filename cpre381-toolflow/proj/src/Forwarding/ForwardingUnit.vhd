@@ -54,12 +54,18 @@ architecture Behavioral of ForwardingUnit is
 
             end if;
 
-            if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011") then
+            if WB_RegWrite = '1' and WB_Dst /= "00000" and WB_Dst = s_EX_RT and 
+            ((EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011"))
+            or EX_Inst(31 downto 26) = "000100" or EX_Inst(31 downto 26) = "000101")
+            then
                 forward_B <= "01";
 
 
-            elsif MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011") then
-                forward_B <= "10";
+            elsif MEM_RegWrite = '1' and MEM_Dst /= "00000" and MEM_Dst = s_EX_RT and 
+            ((EX_Inst(31 downto 26) = "000000" and (EX_Inst(5 downto 0) /= "000000" and  EX_Inst(5 downto 0) /= "000010" and  EX_Inst(5 downto 0) /= "000011"))
+            or EX_Inst(31 downto 26) = "000100" or EX_Inst(31 downto 26) = "000101")
+            then
+                    forward_B <= "10";
 
             end if;
 
