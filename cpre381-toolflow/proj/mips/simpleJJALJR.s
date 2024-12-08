@@ -1,26 +1,16 @@
 main:
 	ori $s0, $zero 0x1234
-	ori $s1 $zero 0x1234
-    nop
-    nop
-    nop
+	ori $s1 $zero 0x1235
 	jal fun
-    nop
-    nop
-	ori $s3 $zero 0x1234
+	ori $s3 $zero 0x1236
 	
 	beq $s0, $zero exit
-    nop
-    nop
-	ori $s4 $zero 0x1234
+	ori $s4 $zero 0x1237
 	j exit
-    nop
 
 fun:
-	ori $s2 $zero 0x1234
+	ori $s2 $zero 0x1238
 	jr $ra
-    nop
-    nop
 exit:
 	halt
 

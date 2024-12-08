@@ -106,6 +106,7 @@ end component;
         i_Jump            : in std_logic;  
         i_JR              : in std_logic;
         i_BNE             : in std_logic;  
+        o_JUMPED          : out std_logic;
         o_BRANCHING       : out std_logic;
         o_Next_PC         : out std_logic_vector(N - 1 downto 0) 
         );
@@ -365,9 +366,12 @@ end component;
           MEM_Dst      : in std_logic_vector(4 downto 0);
           WB_Dst       : in std_logic_vector(4 downto 0); 
 
+          ID_WriteToReg   : in std_logic;
           EX_WriteToReg   : in std_logic;
           MEM_WriteToReg  : in std_logic;
           WB_WriteToReg   : in std_logic;
+
+          i_Jumped        : in std_logic;
 
           i_RST           : in std_logic;
           i_EX_branch     : in std_logic;
@@ -439,7 +443,7 @@ end component;
   signal s_IFID_Flush, s_IDEX_Flush, s_EXMEM_Flush, s_MEMWB_Flush : std_logic;
   --TODO RST will set all flush values to 1 in the hazard detection unit
 
-  signal s_HzdBrnch : std_logic;
+  signal s_HzdBrnch, s_HzdJumped : std_logic;
 
 
   --Forwarding signals
@@ -510,12 +514,13 @@ begin
         i_PC4             => s_IF_PC4,
         i_JAddr           => s_inst_jumpAddr,
         i_BranchAddr      => s_EX_Branch_Addr,
-        i_RegA            => s_EX_Reg_A,
+        i_RegA            => s_ALU_A_In,
         i_Branch          => s_EX_CTRL_Sigs(BRANCH), 
         i_ALU_Zero        => s_ALU_Zero,
         i_Jump            => s_Jump,
         i_JR              => s_EX_CTRL_Sigs(JUMP_RET),
         i_BNE             => s_EX_CTRL_Sigs(BRANCH_NE),
+        o_JUMPED          => s_HzdJumped,
         o_BRANCHING       => s_HzdBrnch,
         o_Next_PC         => s_PC 
     );
@@ -580,9 +585,12 @@ port map(
   MEM_Dst      => s_MEM_WB_Addr,
   WB_Dst       => s_WB_WB_Addr, 
 
+  ID_WriteToReg   => s_ID_CTRL_Sigs(Reg_WRITE),
   EX_WriteToReg   => s_EX_CTRL_Sigs(REG_WRITE),
   MEM_WriteToReg  => s_MEM_CTRL_Sigs(REG_WRITE),
   WB_WriteToReg   => s_WB_CTRL_Sigs(REG_WRITE),
+
+  i_Jumped        => s_HzdJumped,
 
   i_RST           => iRST,
   i_EX_branch     => s_HzdBrnch,

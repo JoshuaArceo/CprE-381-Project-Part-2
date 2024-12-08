@@ -1,5 +1,5 @@
 QuestaSim-64 vcom 2024.2 Compiler 2024.05 May 20 2024
-Start time: 04:02:32 on Dec 08,2024
+Start time: 16:55:07 on Dec 08,2024
 vcom -2008 -work internal/ModelSimContainer/work proj/src/MIPS_types.vhd internal/testpy/tb.vhd proj/src/MIPS_types.vhd proj/src/TopLevel/MIPS_Processor.vhd proj/src/TopLevel/mem.vhd proj/src/PC_Reg/pc_reg.vhd proj/src/Barrel_Shifter/shifter.vhd proj/src/PipelineRegisters/IFID_Reg.vhd proj/src/PipelineRegisters/EXMEM_Reg.vhd proj/src/PipelineRegisters/tb_IFID_Reg_Stall.vhd proj/src/PipelineRegisters/MEMWB_Reg.vhd proj/src/PipelineRegisters/IDEX_Reg.vhd proj/src/Primitives/decoder_5t32.vhd proj/src/Primitives/IFID_reg_N .vhd proj/src/Primitives/mux3t1_N.vhd proj/src/Primitives/or_32bit.vhd proj/src/Primitives/dffg.vhd proj/src/Primitives/nor_32bit.vhd proj/src/Primitives/org2.vhd proj/src/Primitives/reg_N.vhd proj/src/Primitives/dffgfallingedge.vhd proj/src/Primitives/mux2t1_N.vhd proj/src/Primitives/and_32bit.vhd proj/src/Primitives/xorg2.vhd proj/src/Primitives/mux2t1_df.vhd proj/src/Primitives/xor_32bit.vhd proj/src/Primitives/andg2.vhd proj/src/Primitives/mux32t1_32.vhd proj/src/Primitives/full_adder.vhd proj/src/Primitives/onescomp_N.vhd proj/src/Primitives/bus_6digit.vhd proj/src/Primitives/IFIDdffg.vhd proj/src/Primitives/add_sub_N.vhd proj/src/Primitives/regfile.vhd proj/src/Primitives/extend16t32.vhd proj/src/Primitives/ripple_adder_N.vhd proj/src/Primitives/Adder.vhd proj/src/Primitives/invg.vhd proj/src/Control Logic/control.vhd proj/src/Fetch Logic/fetch_logic.vhd proj/src/Fetch Logic/mux2t1.vhd proj/src/HardwareHazardControl/HazardDetection.vhd proj/src/Forwarding/ForwardingUnit.vhd proj/src/Forwarding/tb_forwarding.vhd proj/src/ALU/replicator.vhd proj/src/ALU/alu.vhd proj/src/ALU/ALUcontrol.vhd 
 -- Loading package STANDARD
 -- Loading package TEXTIO
@@ -94,13 +94,14 @@ vcom -2008 -work internal/ModelSimContainer/work proj/src/MIPS_types.vhd interna
 -- Compiling entity control
 -- Compiling architecture behavioral of control
 -- Compiling entity fetch_logic
--- Compiling architecture structural of fetch_logic
+-- Compiling architecture mixed of fetch_logic
 -- Compiling entity mux2t1
 -- Compiling architecture structure of mux2t1
 -- Compiling entity HazardDetection
 -- Compiling architecture mixed of HazardDetection
-** Warning: proj/src/HardwareHazardControl/HazardDetection.vhd(133): (vcom-1083) Implicit array operator "/=" always returns TRUE (left length 5 is not equal to right length 2).
-** Warning: proj/src/HardwareHazardControl/HazardDetection.vhd(133): (vcom-1083) Implicit array operator "/=" always returns TRUE (left length 5 is not equal to right length 2).
+** Warning: proj/src/HardwareHazardControl/HazardDetection.vhd(182): (vcom-1083) Implicit array operator "/=" always returns TRUE (left length 5 is not equal to right length 2).
+** Warning: proj/src/HardwareHazardControl/HazardDetection.vhd(183): (vcom-1083) Implicit array operator "/=" always returns TRUE (left length 5 is not equal to right length 2).
+** Warning: proj/src/HardwareHazardControl/HazardDetection.vhd(184): (vcom-1083) Implicit array operator "/=" always returns TRUE (left length 5 is not equal to right length 2).
 -- Compiling entity ForwardingUnit
 -- Compiling architecture Behavioral of ForwardingUnit
 -- Compiling entity tb_forwarding
@@ -111,5 +112,5 @@ vcom -2008 -work internal/ModelSimContainer/work proj/src/MIPS_types.vhd interna
 -- Compiling architecture structural of alu
 -- Compiling entity ALUcontrol
 -- Compiling architecture structural of ALUcontrol
-End time: 04:02:32 on Dec 08,2024, Elapsed time: 0:00:00
-Errors: 0, Warnings: 8
+End time: 16:55:07 on Dec 08,2024, Elapsed time: 0:00:00
+Errors: 0, Warnings: 9

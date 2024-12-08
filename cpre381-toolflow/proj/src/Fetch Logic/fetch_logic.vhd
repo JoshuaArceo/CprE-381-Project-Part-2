@@ -13,13 +13,14 @@ entity fetch_logic is
         i_Jump            : in std_logic;  
         i_JR              : in std_logic;
         i_BNE             : in std_logic;  
+        o_JUMPED          : out std_logic;
         o_BRANCHING       : out std_logic;
         o_Next_PC         : out std_logic_vector(N - 1 downto 0) 
         );
 
 end fetch_logic;
 
-architecture structural of fetch_logic is
+architecture mixed of fetch_logic is
 
     component mux2t1_N is
         generic(N : integer := 32);
@@ -61,7 +62,6 @@ architecture structural of fetch_logic is
 
 begin
     s_branchAddr <= i_BranchAddr;
-
     s_PC4 <= i_PC4;
     s_jumpAddr <= s_PC4(31 downto 28) & i_JAddr & "00";
 
@@ -130,8 +130,14 @@ begin
         o_O => o_Next_PC
     );
 
-
+    process(s_PC4)
+    begin
+        if(o_Next_PC /= s_PC4 )
+        then o_JUMPED <= '1';
+        else o_JUMPED <= '0';
+        end if;
+    end process;
     o_BRANCHING <= s_BranchSelect;
 
 
-END structural;
+END mixed;

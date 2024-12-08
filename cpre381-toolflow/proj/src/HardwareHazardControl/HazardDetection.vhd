@@ -19,9 +19,13 @@ entity HazardDetection is
         MEM_Dst      : in std_logic_vector(4 downto 0); 
         WB_Dst       : in std_logic_vector(4 downto 0);  
 
+        ID_WriteToReg   : in std_logic;
         EX_WriteToReg   : in std_logic;
         MEM_WriteToReg  : in std_logic;
         WB_WriteToReg   : in std_logic;
+
+        i_Jumped        : in std_logic;
+
 
         i_RST           : in std_logic;
         i_EX_branch     : in std_logic;
@@ -65,10 +69,10 @@ architecture mixed of HazardDetection is
         s_WB_RT    <= WB_Inst(20 downto 16);
         s_WB_RD    <= WB_Inst(15 downto 11);
 
-        process(IF_Inst, ID_Inst, EX_Inst, WB_Inst, EX_Dst, MEM_Dst, i_RST, 
+        process(IF_Inst, ID_Inst, EX_Inst, WB_Inst, ID_Dst, EX_Dst, MEM_Dst, i_RST, i_Jumped,
         s_IF_RS, s_IF_RT, s_IF_RD, s_ID_RS, s_ID_RT, s_ID_RD, s_EX_RS, s_EX_RT, s_EX_RD, 
         s_MEM_RS, s_MEM_RT, s_MEM_RD, s_WB_RS, s_WB_RT, s_WB_RD,
-        EX_WriteToReg, MEM_WriteToReg, WB_WriteToReg)
+        ID_WriteToReg, EX_WriteToReg, MEM_WriteToReg, WB_WriteToReg)
         begin    
         o_IFID_Stall  <= '0';
         o_IDEX_Stall  <= '0';
@@ -105,15 +109,7 @@ architecture mixed of HazardDetection is
 
 
                 
-                --Stall for JR
-                if(EX_Inst(31 downto 26) ="000000" and EX_Inst(5 downto 0) = "001000")
-                then o_IFID_Stall  <= '0';
-                    o_IFID_Flush <= '1';
-                elsif(ID_Inst(31 downto 26) = "000000" and ID_Inst(5 downto 0) = "001000")
-                    then o_IFID_Stall  <= '1';
-                    o_PC_Stall    <= '1';
-
-                end if;
+              
                 
                 --Branch Stalling
             if(EX_Inst(31 downto 26) ="000100" or EX_Inst(31 downto 26) ="000101")
@@ -128,12 +124,7 @@ architecture mixed of HazardDetection is
 
             end if;
 
-            --JAL Stalling
-
-            if(IF_Inst(31 downto 26) = "000011" and (((MEM_WriteToReg ='1') and MEM_Dst /= "00") or (EX_WriteToReg='1'and EX_Dst /= "00")))
-                then o_IFID_Stall  <= '1';
-                o_PC_Stall    <= '1';
-                end if;
+           
 
             -- if(EX_Inst(31 downto 26) = "000011") then
             --     o_IFID_Stall <= '0';
@@ -150,10 +141,7 @@ architecture mixed of HazardDetection is
             --     then o_IFID_Stall  <= '1';
             -- end if;
 
-                -- if(IF_Inst(31 downto 26) = "000011") and ID_Inst = WB_Inst and ID_Inst /= X"00000000" then
-                --     o_IFID_Flush <= '1';
-                --     o_IDEX_Flush <= '1';
-                -- end if;
+               
 
             --Stall for LW forwarding
             if(EX_Inst = ID_Inst) and EX_Inst(31 downto 26) = "100011" then
@@ -177,6 +165,48 @@ architecture mixed of HazardDetection is
                 then
                     o_EXMEM_Flush <= '1';
                 end if;
+
+    --JAL Stalling
+    if(EX_Inst(31 downto 26) ="000011" )
+    then o_IFID_Stall  <= '0';
+    
+    if(i_Jumped = '1') then
+        o_IFID_Flush <= '1';
+        o_IDEX_Flush <= '1';
+        o_EXMEM_Flush <= '1';
+        end if;
+
+    elsif(ID_Inst(31 downto 26) = "000011" )then
+        o_IFID_Stall <= '1';
+    elsif(IF_Inst(31 downto 26) = "000011" and 
+    (((MEM_WriteToReg ='1') and MEM_Dst /= "00" and MEM_Inst /= X"00000000" and MEM_Inst(31 downto 26) /= "000010") 
+    or (ID_WriteToReg='1'and ID_Dst /= "00"  and EX_Inst = X"00000000" and MEM_Inst = X"00000000" and WB_Inst = X"00000000" and ID_Inst /= X"00000000" and ID_Inst(31 downto 26) /= "000010") 
+    or (EX_WriteToReg='1'and EX_Dst /= "00"  and MEM_Inst = X"00000000" and WB_Inst = X"00000000" and EX_Inst /= X"00000000" and EX_Inst(31 downto 26) /= "000010") 
+    ))
+        then 
+        o_IFID_Stall  <= '1';
+        o_PC_Stall    <= '1';
+    end if;
+    if(IF_Inst(31 downto 26) = "000011") and ID_Inst = MEM_Inst and ID_Inst /= X"00000000"  then
+        o_IFID_Stall  <= '0';    
+        o_IFID_Flush <= '1';
+        o_IDEX_Flush <= '1';
+        end if;
+
+       --Stall for JR
+       if(EX_Inst(31 downto 26) ="000000" and EX_Inst(5 downto 0) = "001000")
+       then o_IFID_Stall  <= '0';
+       o_PC_Stall <= '0';
+       o_IFID_Flush <= '1';
+       if(i_Jumped = '1') then
+           end if;
+       elsif(ID_Inst(31 downto 26) = "000000" and ID_Inst(5 downto 0) = "001000")
+           then o_IFID_Stall  <= '1';
+           o_PC_Stall    <= '1';
+       -- elsif(IF_Inst(31 downto 26) = "000000" and ID_Inst(5 downto 0) = "001000" and (s_IF_RS = ID_Dst or s_IF_RS = EX_Dst or s_IF_RS = MEM_Dst)) then 
+       -- o_IFID_Stall  <= '1';
+       -- o_PC_Stall    <= '1';
+       end if;
 
         end process;
 
