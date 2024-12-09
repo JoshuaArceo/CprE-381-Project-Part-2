@@ -49,11 +49,12 @@ outer_loop:
       nop
       li $t0, 0
       addi $s1, $s1, 1
+      nop
 
 print_loop:
-  addi $t2, $t2, 4                  #addr itr i += 4
   addi $t0, $t0, 1                  #i++
-  nop
+  addi $t2, $t2, 4                  #addr itr i += 4
+
   nop
   bne $t0, $s1, print_loop          #i != n
   nop
