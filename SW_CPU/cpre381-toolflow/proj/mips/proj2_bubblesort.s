@@ -40,8 +40,10 @@ outer_loop:
       lw $s4, 0($t3)
 
     cond:
-      addi $t0, $t0, 1                  #i++
       bne $t1, $s2, inner_loop      #j != n-i
+      nop
+      nop
+      addi $t0, $t0, 1                  #i++
       nop
       nop
       bne $t0, $s1, outer_loop           #i != n
